@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#4A90D9">
+  <title>일일 체크리스트</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>
+    :root {
+      --primary: #4A90D9;
+      --primary-light: #6BA5E7;
+      --primary-dark: #3A7BC8;
+      --bg: #F5F7FA;
+      --card: #FFFFFF;
+      --text: #2C3E50;
+      --text-light: #7F8C8D;
+      --success: #27AE60;
+      --danger: #E74C3C;
+      --border: #E8ECF1;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --radius: 12px;
+      --tab-height: 60px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 16px 20px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(74,144,217,0.3);
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .header .date-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .header .date-nav button {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header .date-nav button:active {
+      background: rgba(255,255,255,0.35);
+    }
+
+    .header .date-nav .current-date {
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Tab content */
+    .tab-content {
+      padding: 16px 16px calc(var(--tab-height) + var(--safe-bottom) + 16px);
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Bottom Tab Bar */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(var(--tab-height) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: var(--card);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+      z-index: 100;
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 8px 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+      font-size: 11px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+    }
+
+    .tab-btn .tab-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-info .label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .progress-info .count {
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 4px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* Checklist */
+    .checklist-section {
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .checklist-item {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+
+    .checklist-item.done {
+      opacity: 0.6;
+    }
+
+    .checklist-item .checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .checklist-item.done .checkbox {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .checklist-item .checkbox::after {
+      content: '';
+      display: none;
+      width: 6px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      margin-top: -2px;
+    }
+
+    .checklist-item.done .checkbox::after {
+      display: block;
+    }
+
+    .checklist-item .item-name {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .checklist-item.done .item-name {
+      text-decoration: line-through;
+      color: var(--text-light);
+    }
+
+    .checklist-item .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      opacity: 0.5;
+    }
+
+    .checklist-item .delete-btn:active {
+      opacity: 1;
+      color: var(--danger);
+    }
+
+    /* Add Item */
+    .add-item-container {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .add-item-container input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+      background: var(--card);
+    }
+
+    .add-item-container input:focus {
+      border-color: var(--primary);
+    }
+
+    .add-item-container button {
+      padding: 12px 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .add-item-container button:active {
+      background: var(--primary-dark);
+    }
+
+    /* Calendar Tab */
+    .mini-calendar {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .week-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .week-header span {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .week-header span:first-child {
+      color: var(--danger);
+    }
+
+    .week-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      gap: 4px;
+    }
+
+    .week-day {
+      padding: 8px 0;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .week-day.today {
+      background: var(--primary);
+      color: white;
+    }
+
+    .week-day.selected:not(.today) {
+      background: var(--primary-light);
+      color: white;
+    }
+
+    .week-day.has-events::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .week-day.today.has-events::after {
+      background: white;
+    }
+
+    /* Event list */
+    .event-list {
+      margin-top: 12px;
+    }
+
+    .event-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--primary);
+    }
+
+    .event-card .event-time {
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .event-card .event-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .event-card .event-location {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+    }
+
+    .empty-state .empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+    }
+
+    /* Settings Tab */
+    .settings-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .settings-section h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-row .drag-handle {
+      color: var(--text-light);
+      cursor: grab;
+      font-size: 18px;
+      padding: 0 4px;
+    }
+
+    .setting-row .template-name {
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .setting-row .remove-btn {
+      background: none;
+      border: none;
+      color: var(--danger);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .api-url-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      margin-top: 8px;
+    }
+
+    .api-url-input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:active {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      background: none;
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-badge.connected {
+      background: #E8F8EF;
+      color: var(--success);
+    }
+
+    .status-badge.disconnected {
+      background: #FDE8E8;
+      color: var(--danger);
+    }
+
+    /* Template add */
+    .template-add-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .template-add-row input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .template-add-row input:focus {
+      border-color: var(--primary);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--tab-height) + var(--safe-bottom) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--text);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 200;
+      opacity: 0;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <h1 id="headerTitle">오늘의 체크리스트</h1>
+    <div class="date-nav" id="dateNav">
+      <button onclick="changeDate(-1)">&#9664;</button>
+      <span class="current-date" id="currentDate" onclick="goToday()"></span>
+      <button onclick="changeDate(1)">&#9654;</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Tab 1: Checklist -->
+  <div class="tab-content active" id="tab-checklist">
+    <!-- Progress -->
+    <div class="progress-container">
+      <div class="progress-info">
+        <span class="label">오늘의 달성률</span>
+        <span class="count" id="progressCount">0/0</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- Fixed items -->
+    <div class="checklist-section">
+      <div class="section-title">고정 항목</div>
+      <div id="fixedItems"></div>
+    </div>
+
+    <!-- Additional items -->
+    <div class="checklist-section">
+      <div class="section-title">추가 항목</div>
+      <div id="additionalItems"></div>
+    </div>
+
+    <!-- Add new -->
+    <div class="add-item-container">
+      <input type="text" id="newItemInput" placeholder="새 항목 추가..."
+             onkeydown="if(event.key==='Enter')addItem()">
+      <button onclick="addItem()">추가</button>
+    </div>
+  </div>
+
+  <!-- Tab 2: Calendar -->
+  <div class="tab-content" id="tab-calendar">
+    <!-- Mini calendar -->
+    <div class="mini-calendar">
+      <div class="week-header">
+        <span>일</span><span>월</span><span>화</span><span>수</span>
+        <span>목</span><span>금</span><span>토</span>
+      </div>
+      <div class="week-days" id="weekDays"></div>
+    </div>
+
+    <!-- Events -->
+    <div class="section-title">일정</div>
+    <div class="event-list" id="eventList"></div>
+  </div>
+
+  <!-- Tab 3: Settings -->
+  <div class="tab-content" id="tab-settings">
+    <!-- API URL -->
+    <div class="settings-section">
+      <h3>Google Apps Script 연결</h3>
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">
+        배포된 웹앱 URL을 입력하세요
+      </p>
+      <input type="url" class="api-url-input" id="apiUrlInput"
+             placeholder="https://script.google.com/macros/s/...">
+      <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+        <button class="btn btn-primary btn-sm" onclick="saveApiUrl()">저장</button>
+        <button class="btn btn-outline btn-sm" onclick="testConnection()">연결 테스트</button>
+        <span class="status-badge disconnected" id="connectionStatus">미연결</span>
+      </div>
+    </div>
+
+    <!-- Template Editor -->
+    <div class="settings-section">
+      <h3>고정 템플릿 편집</h3>
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:12px;">
+        매일 자동으로 추가되는 항목입니다
+      </p>
+      <div id="templateList"></div>
+      <div class="template-add-row">
+        <input type="text" id="newTemplateName" placeholder="새 템플릿 항목..."
+               onkeydown="if(event.key==='Enter')addTemplate()">
+        <button class="btn btn-primary btn-sm" onclick="addTemplate()">추가</button>
+      </div>
+      <button class="btn btn-primary" onclick="saveTemplates()" style="width:100%;margin-top:12px;">
+        템플릿 저장
+      </button>
+    </div>
+
+    <!-- Local Fallback Templates -->
+    <div class="settings-section">
+      <h3>로컬 기본 템플릿</h3>
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">
+        서버 연결 전 사용되는 기본 항목 (쉼표로 구분)
+      </p>
+      <input type="text" class="api-url-input" id="localTemplateInput"
+             placeholder="물 2L 마시기, 운동 30분, 독서 20분">
+      <button class="btn btn-outline btn-sm" onclick="saveLocalTemplates()" style="margin-top:8px;">
+        로컬 저장
+      </button>
+    </div>
+
+    <!-- App Info -->
+    <div class="settings-section" style="text-align:center;">
+      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v1.0</p>
+      <p style="font-size:12px;color:var(--text-light);margin-top:4px;">PWA - 오프라인 지원</p>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <nav class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('checklist', this)">
+      <span class="tab-icon">&#9745;</span>
+      <span>체크리스트</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('calendar', this)">
+      <span class="tab-icon">&#128197;</span>
+      <span>캘린더</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('settings', this)">
+      <span class="tab-icon">&#9881;</span>
+      <span>설정</span>
+    </button>
+  </nav>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ==========================================
+    // State
+    // ==========================================
+    let currentDate = new Date();
+    let checklistItems = [];
+    let templates = [];
+    let weekEvents = {};
+
+    const API_URL_KEY = 'daily_app_api_url';
+    const LOCAL_DATA_PREFIX = 'daily_checklist_';
+    const LOCAL_TEMPLATES_KEY = 'daily_templates_local';
+
+    // ==========================================
+    // Initialization
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load saved API URL
+      const savedUrl = localStorage.getItem(API_URL_KEY);
+      if (savedUrl) {
+        document.getElementById('apiUrlInput').value = savedUrl;
+      }
+
+      // Load local templates
+      const localTmpl = localStorage.getItem(LOCAL_TEMPLATES_KEY);
+      if (localTmpl) {
+        document.getElementById('localTemplateInput').value = localTmpl;
+      }
+
+      updateDateDisplay();
+      loadChecklist();
+      registerServiceWorker();
+    });
+
+    function registerServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      }
+    }
+
+    // ==========================================
+    // Tab Navigation
+    // ==========================================
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById('tab-' + tab).classList.add('active');
+      btn.classList.add('active');
+
+      if (tab === 'checklist') {
+        document.getElementById('headerTitle').textContent = '오늘의 체크리스트';
+        document.getElementById('dateNav').style.display = 'flex';
+      } else if (tab === 'calendar') {
+        document.getElementById('headerTitle').textContent = '캘린더';
+        document.getElementById('dateNav').style.display = 'flex';
+        loadCalendar();
+      } else {
+        document.getElementById('headerTitle').textContent = '설정';
+        document.getElementById('dateNav').style.display = 'none';
+        loadTemplateEditor();
+        updateConnectionStatus();
+      }
+    }
+
+    // ==========================================
+    // Date Navigation
+    // ==========================================
+    function formatDate(d) {
+      return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+    }
+
+    function formatDisplayDate(d) {
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const m = d.getMonth() + 1;
+      const day = d.getDate();
+      const dow = days[d.getDay()];
+      return `${m}월 ${day}일 (${dow})`;
+    }
+
+    function updateDateDisplay() {
+      const today = new Date();
+      const dateStr = formatDisplayDate(currentDate);
+      const isToday = formatDate(currentDate) === formatDate(today);
+      document.getElementById('currentDate').textContent = isToday ? `오늘 - ${dateStr}` : dateStr;
+    }
+
+    function changeDate(delta) {
+      currentDate.setDate(currentDate.getDate() + delta);
+      updateDateDisplay();
+      loadChecklist();
+
+      // Reload calendar if active
+      if (document.getElementById('tab-calendar').classList.contains('active')) {
+        loadCalendar();
+      }
+    }
+
+    function goToday() {
+      currentDate = new Date();
+      updateDateDisplay();
+      loadChecklist();
+    }
+
+    // ==========================================
+    // API Helpers
+    // ==========================================
+    function getApiUrl() {
+      return localStorage.getItem(API_URL_KEY) || '';
+    }
+
+    async function apiGet(action, params = {}) {
+      const url = getApiUrl();
+      if (!url) return null;
+
+      const queryStr = new URLSearchParams({ action, ...params }).toString();
+      try {
+        const resp = await fetch(`${url}?${queryStr}`);
+        return await resp.json();
+      } catch (e) {
+        console.error('API GET error:', e);
+        return null;
+      }
+    }
+
+    async function apiPost(data) {
+      const url = getApiUrl();
+      if (!url) return null;
+
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(data)
+        });
+        return await resp.json();
+      } catch (e) {
+        console.error('API POST error:', e);
+        return null;
+      }
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading').classList.toggle('active', show);
+    }
+
+    // ==========================================
+    // Checklist Logic
+    // ==========================================
+    async function loadChecklist() {
+      const dateStr = formatDate(currentDate);
+
+      // Try API first
+      if (getApiUrl()) {
+        showLoading(true);
+        const data = await apiGet('getChecklist', { date: dateStr });
+        showLoading(false);
+
+        if (data && !data.error) {
+          checklistItems = data.items || [];
+          saveLocalChecklist(dateStr, checklistItems);
+          renderChecklist();
+          return;
+        }
+      }
+
+      // Fallback to local storage
+      const local = loadLocalChecklist(dateStr);
+      if (local) {
+        checklistItems = local;
+      } else {
+        // Create from local templates
+        checklistItems = getLocalTemplateItems();
+        saveLocalChecklist(dateStr, checklistItems);
+      }
+      renderChecklist();
+    }
+
+    function getLocalTemplateItems() {
+      const tmplStr = localStorage.getItem(LOCAL_TEMPLATES_KEY) || '물 2L 마시기, 운동 30분, 독서 20분, 일기 쓰기';
+      return tmplStr.split(',').map((name, i) => ({
+        name: name.trim(),
+        done: false,
+        type: '고정',
+        order: i + 1,
+        id: 'l' + Date.now() + i
+      })).filter(item => item.name);
+    }
+
+    function renderChecklist() {
+      const fixed = checklistItems.filter(i => i.type === '고정');
+      const additional = checklistItems.filter(i => i.type === '추가');
+
+      document.getElementById('fixedItems').innerHTML = fixed.map(item => renderItem(item)).join('');
+      document.getElementById('additionalItems').innerHTML = additional.length > 0
+        ? additional.map(item => renderItem(item)).join('')
+        : '<div style="padding:8px;color:var(--text-light);font-size:13px;">추가 항목 없음</div>';
+
+      updateProgress();
+    }
+
+    function renderItem(item) {
+      return `
+        <div class="checklist-item ${item.done ? 'done' : ''}" data-id="${item.id}">
+          <div class="checkbox" onclick="toggleItem('${item.id}')"></div>
+          <span class="item-name">${escapeHtml(item.name)}</span>
+          <button class="delete-btn" onclick="deleteItem('${item.id}')">&times;</button>
+        </div>
+      `;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function updateProgress() {
+      const total = checklistItems.length;
+      const done = checklistItems.filter(i => i.done).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      document.getElementById('progressCount').textContent = `${done}/${total}`;
+      document.getElementById('progressFill').style.width = pct + '%';
+    }
+
+    async function toggleItem(id) {
+      const item = checklistItems.find(i => i.id === id);
+      if (!item) return;
+
+      item.done = !item.done;
+      renderChecklist();
+      await saveChecklist();
+    }
+
+    async function deleteItem(id) {
+      checklistItems = checklistItems.filter(i => i.id !== id);
+      renderChecklist();
+      await saveChecklist();
+    }
+
+    async function addItem() {
+      const input = document.getElementById('newItemInput');
+      const name = input.value.trim();
+      if (!name) return;
+
+      const maxOrder = checklistItems.reduce((max, i) => Math.max(max, i.order || 0), 0);
+      checklistItems.push({
+        name: name,
+        done: false,
+        type: '추가',
+        order: maxOrder + 1,
+        id: 'a' + Date.now()
+      });
+
+      input.value = '';
+      renderChecklist();
+      await saveChecklist();
+      showToast('항목 추가됨');
+    }
+
+    async function saveChecklist() {
+      const dateStr = formatDate(currentDate);
+      saveLocalChecklist(dateStr, checklistItems);
+
+      if (getApiUrl()) {
+        await apiPost({
+          action: 'saveChecklist',
+          date: dateStr,
+          items: checklistItems
+        });
+      }
+    }
+
+    // Local Storage
+    function saveLocalChecklist(dateStr, items) {
+      localStorage.setItem(LOCAL_DATA_PREFIX + dateStr, JSON.stringify(items));
+    }
+
+    function loadLocalChecklist(dateStr) {
+      const data = localStorage.getItem(LOCAL_DATA_PREFIX + dateStr);
+      return data ? JSON.parse(data) : null;
+    }
+
+    // ==========================================
+    // Calendar Logic
+    // ==========================================
+    async function loadCalendar() {
+      const dateStr = formatDate(currentDate);
+
+      renderWeekCalendar();
+
+      if (getApiUrl()) {
+        showLoading(true);
+        const data = await apiGet('getCalendar', { date: dateStr });
+        showLoading(false);
+
+        if (data && !data.error) {
+          weekEvents = data.weekEvents || {};
+          renderWeekCalendar();
+          renderEvents(data.events || []);
+          return;
+        }
+      }
+
+      // No API - show empty
+      renderEvents([]);
+    }
+
+    function renderWeekCalendar() {
+      const d = new Date(currentDate);
+      const dayOfWeek = d.getDay();
+      const sunday = new Date(d);
+      sunday.setDate(d.getDate() - dayOfWeek);
+
+      const today = formatDate(new Date());
+      const selected = formatDate(currentDate);
+
+      let html = '';
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(sunday);
+        day.setDate(sunday.getDate() + i);
+        const ds = formatDate(day);
+        const classes = ['week-day'];
+
+        if (ds === today) classes.push('today');
+        if (ds === selected) classes.push('selected');
+        if (weekEvents[ds] && weekEvents[ds].length > 0) classes.push('has-events');
+
+        html += `<div class="${classes.join(' ')}" onclick="selectCalendarDay('${ds}')">${day.getDate()}</div>`;
+      }
+
+      document.getElementById('weekDays').innerHTML = html;
+    }
+
+    function selectCalendarDay(dateStr) {
+      currentDate = new Date(dateStr + 'T00:00:00');
+      updateDateDisplay();
+      loadCalendar();
+    }
+
+    function renderEvents(events) {
+      const container = document.getElementById('eventList');
+
+      if (events.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">&#128197;</div>
+            <p>일정이 없습니다</p>
+            <p style="margin-top:4px;font-size:12px;">구글 캘린더 연동 시 일정이 표시됩니다</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = events.map(ev => {
+        const timeStr = ev.allDay ? '종일' : formatTime(ev.start) + ' - ' + formatTime(ev.end);
+        return `
+          <div class="event-card">
+            <div class="event-time">${timeStr}</div>
+            <div class="event-title">${escapeHtml(ev.title)}</div>
+            ${ev.location ? `<div class="event-location">&#128205; ${escapeHtml(ev.location)}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatTime(isoStr) {
+      const d = new Date(isoStr);
+      const h = d.getHours();
+      const m = String(d.getMinutes()).padStart(2, '0');
+      const period = h < 12 ? '오전' : '오후';
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      return `${period} ${h12}:${m}`;
+    }
+
+    // ==========================================
+    // Settings - Templates
+    // ==========================================
+    async function loadTemplateEditor() {
+      // Try loading from API
+      if (getApiUrl()) {
+        const data = await apiGet('getTemplates');
+        if (data && !data.error && data.templates) {
+          templates = data.templates;
+          renderTemplateList();
+          return;
+        }
+      }
+
+      // Fallback: parse local templates
+      const tmplStr = localStorage.getItem(LOCAL_TEMPLATES_KEY) || '물 2L 마시기, 운동 30분, 독서 20분, 일기 쓰기';
+      templates = tmplStr.split(',').map((name, i) => ({
+        name: name.trim(),
+        order: i + 1,
+        id: 't' + i
+      })).filter(t => t.name);
+
+      renderTemplateList();
+    }
+
+    function renderTemplateList() {
+      const container = document.getElementById('templateList');
+      container.innerHTML = templates.map((t, idx) => `
+        <div class="setting-row" data-idx="${idx}">
+          <span class="drag-handle">&#9776;</span>
+          <span class="template-name">${escapeHtml(t.name)}</span>
+          <button class="remove-btn" onclick="removeTemplate(${idx})">&times;</button>
+        </div>
+      `).join('');
+
+      // Simple drag-and-drop reorder
+      setupDragReorder(container);
+    }
+
+    function addTemplate() {
+      const input = document.getElementById('newTemplateName');
+      const name = input.value.trim();
+      if (!name) return;
+
+      templates.push({
+        name: name,
+        order: templates.length + 1,
+        id: 't' + Date.now()
+      });
+
+      input.value = '';
+      renderTemplateList();
+      showToast('항목 추가됨');
+    }
+
+    function removeTemplate(idx) {
+      templates.splice(idx, 1);
+      templates.forEach((t, i) => t.order = i + 1);
+      renderTemplateList();
+    }
+
+    async function saveTemplates() {
+      templates.forEach((t, i) => t.order = i + 1);
+
+      // Save to local as well
+      const names = templates.map(t => t.name).join(', ');
+      localStorage.setItem(LOCAL_TEMPLATES_KEY, names);
+      document.getElementById('localTemplateInput').value = names;
+
+      if (getApiUrl()) {
+        showLoading(true);
+        const result = await apiPost({
+          action: 'saveTemplates',
+          templates: templates
+        });
+        showLoading(false);
+
+        if (result && result.success) {
+          showToast('서버에 저장 완료');
+          return;
+        }
+      }
+
+      showToast('로컬에 저장 완료');
+    }
+
+    function saveLocalTemplates() {
+      const input = document.getElementById('localTemplateInput');
+      localStorage.setItem(LOCAL_TEMPLATES_KEY, input.value);
+      showToast('로컬 템플릿 저장됨');
+    }
+
+    // ==========================================
+    // Settings - API Connection
+    // ==========================================
+    function saveApiUrl() {
+      const url = document.getElementById('apiUrlInput').value.trim();
+      if (url) {
+        localStorage.setItem(API_URL_KEY, url);
+        showToast('URL 저장됨');
+        updateConnectionStatus();
+      } else {
+        localStorage.removeItem(API_URL_KEY);
+        showToast('URL 제거됨');
+        updateConnectionStatus();
+      }
+    }
+
+    async function testConnection() {
+      const url = getApiUrl();
+      if (!url) {
+        showToast('URL을 먼저 입력하세요');
+        return;
+      }
+
+      showLoading(true);
+      const data = await apiGet('getTemplates');
+      showLoading(false);
+
+      if (data && !data.error) {
+        showToast('연결 성공!');
+        updateConnectionStatus(true);
+      } else {
+        showToast('연결 실패 - URL을 확인하세요');
+        updateConnectionStatus(false);
+      }
+    }
+
+    function updateConnectionStatus(connected) {
+      const badge = document.getElementById('connectionStatus');
+      const hasUrl = !!getApiUrl();
+
+      if (connected === true) {
+        badge.textContent = '연결됨';
+        badge.className = 'status-badge connected';
+      } else if (connected === false || !hasUrl) {
+        badge.textContent = hasUrl ? '연결 실패' : '미연결';
+        badge.className = 'status-badge disconnected';
+      }
+    }
+
+    // ==========================================
+    // Drag Reorder (simple touch-based)
+    // ==========================================
+    function setupDragReorder(container) {
+      let dragIdx = null;
+
+      container.querySelectorAll('.drag-handle').forEach((handle, idx) => {
+        handle.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          dragIdx = idx;
+          handle.closest('.setting-row').style.background = '#f0f4ff';
+        });
+      });
+
+      container.addEventListener('touchend', (e) => {
+        if (dragIdx === null) return;
+
+        const touch = e.changedTouches[0];
+        const rows = container.querySelectorAll('.setting-row');
+        let targetIdx = dragIdx;
+
+        rows.forEach((row, i) => {
+          const rect = row.getBoundingClientRect();
+          if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+            targetIdx = i;
+          }
+        });
+
+        if (targetIdx !== dragIdx) {
+          const [moved] = templates.splice(dragIdx, 1);
+          templates.splice(targetIdx, 0, moved);
+          renderTemplateList();
+        } else {
+          rows[dragIdx].style.background = '';
+        }
+
+        dragIdx = null;
+      });
+    }
+
+    // ==========================================
+    // Toast
+    // ==========================================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>
