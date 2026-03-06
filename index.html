@@ -220,6 +220,162 @@
       width: 0%;
     }
 
+    /* Monthly Plan Section */
+    .monthly-plan-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .monthly-plan-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .monthly-plan-header:active {
+      background: var(--bg);
+    }
+
+    .monthly-plan-header .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .monthly-plan-header .title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .monthly-progress {
+      font-size: 12px;
+      background: var(--bg);
+      color: var(--text-light);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .monthly-toggle {
+      font-size: 12px;
+      color: var(--text-light);
+      transition: transform 0.2s;
+    }
+
+    .monthly-toggle.open {
+      transform: rotate(180deg);
+    }
+
+    .monthly-plan-body {
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+    }
+
+    .monthly-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .monthly-item:last-of-type {
+      border-bottom: none;
+    }
+
+    .monthly-item .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .monthly-item.done .checkbox {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .monthly-item .checkbox::after {
+      content: '';
+      display: none;
+      width: 5px;
+      height: 9px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      margin-top: -2px;
+    }
+
+    .monthly-item.done .checkbox::after {
+      display: block;
+    }
+
+    .monthly-item .monthly-name {
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .monthly-item.done .monthly-name {
+      text-decoration: line-through;
+      color: var(--text-light);
+    }
+
+    .monthly-item .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+      opacity: 0.5;
+    }
+
+    .monthly-item .delete-btn:active {
+      opacity: 1;
+      color: var(--danger);
+    }
+
+    .monthly-add-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .monthly-add-row input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .monthly-add-row input:focus {
+      border-color: var(--primary);
+    }
+
+    .monthly-add-row button {
+      padding: 8px 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
     /* Checklist */
     .checklist-section {
       margin-bottom: 12px;
@@ -238,11 +394,11 @@
     .checklist-item {
       background: var(--card);
       border-radius: var(--radius);
-      padding: 14px 16px;
+      padding: 12px 16px;
       margin-bottom: 8px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       box-shadow: var(--shadow);
       transition: all 0.2s;
     }
@@ -284,8 +440,33 @@
       display: block;
     }
 
-    .checklist-item .item-name {
+    /* Priority Badge */
+    .priority-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .priority-badge.A { background: #E74C3C; }
+    .priority-badge.B { background: #E67E22; }
+    .priority-badge.C { background: #3498DB; }
+
+    /* Item content */
+    .item-content {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .checklist-item .item-name {
       font-size: 15px;
       font-weight: 500;
     }
@@ -293,6 +474,17 @@
     .checklist-item.done .item-name {
       text-decoration: line-through;
       color: var(--text-light);
+    }
+
+    .deadline-text {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .deadline-text.overdue {
+      color: var(--danger);
+      font-weight: 600;
     }
 
     .checklist-item .delete-btn {
@@ -310,40 +502,103 @@
       color: var(--danger);
     }
 
-    /* Add Item */
-    .add-item-container {
-      display: flex;
-      gap: 8px;
+    /* Add Item (new multi-row UI) */
+    .add-item-wrapper {
       margin-top: 16px;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
     }
 
-    .add-item-container input {
+    .add-item-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .add-item-row + .add-item-row {
+      margin-top: 8px;
+    }
+
+    .add-item-row .text-input {
       flex: 1;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border: 2px solid var(--border);
       border-radius: var(--radius);
       font-size: 15px;
       outline: none;
-      transition: border-color 0.2s;
+      background: var(--bg);
+    }
+
+    .add-item-row .text-input:focus {
+      border-color: var(--primary);
       background: var(--card);
     }
 
-    .add-item-container input:focus {
-      border-color: var(--primary);
+    .time-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
     }
 
-    .add-item-container button {
-      padding: 12px 20px;
+    .time-group input[type="time"] {
+      flex: 1;
+      padding: 8px 10px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      background: var(--bg);
+    }
+
+    .time-group input[type="time"]:focus {
+      border-color: var(--primary);
+      background: var(--card);
+    }
+
+    .time-group .until-label {
+      font-size: 13px;
+      color: var(--text-light);
+      white-space: nowrap;
+    }
+
+    .priority-group {
+      display: flex;
+      gap: 4px;
+    }
+
+    .priority-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.15s;
+    }
+
+    .priority-btn[data-priority="A"].active { background: #E74C3C; border-color: #E74C3C; color: white; }
+    .priority-btn[data-priority="B"].active { background: #E67E22; border-color: #E67E22; color: white; }
+    .priority-btn[data-priority="C"].active { background: #3498DB; border-color: #3498DB; color: white; }
+
+    .add-btn {
+      padding: 8px 16px;
       background: var(--primary);
       color: white;
       border: none;
-      border-radius: var(--radius);
-      font-size: 15px;
+      border-radius: 8px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
     }
 
-    .add-item-container button:active {
+    .add-btn:active {
       background: var(--primary-dark);
     }
 
@@ -477,39 +732,6 @@
       margin-bottom: 12px;
     }
 
-    .setting-row {
-      display: flex;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-      gap: 12px;
-    }
-
-    .setting-row:last-child {
-      border-bottom: none;
-    }
-
-    .setting-row .drag-handle {
-      color: var(--text-light);
-      cursor: grab;
-      font-size: 18px;
-      padding: 0 4px;
-    }
-
-    .setting-row .template-name {
-      flex: 1;
-      font-size: 14px;
-    }
-
-    .setting-row .remove-btn {
-      background: none;
-      border: none;
-      color: var(--danger);
-      font-size: 20px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
     .api-url-input {
       width: 100%;
       padding: 10px 14px;
@@ -572,26 +794,6 @@
       color: var(--danger);
     }
 
-    /* Template add */
-    .template-add-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .template-add-row input {
-      flex: 1;
-      padding: 10px 14px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .template-add-row input:focus {
-      border-color: var(--primary);
-    }
-
     /* Toast */
     .toast {
       position: fixed;
@@ -646,23 +848,49 @@
       </div>
     </div>
 
-    <!-- Fixed items -->
-    <div class="checklist-section">
-      <div class="section-title">고정 항목</div>
-      <div id="fixedItems"></div>
+    <!-- Monthly Plan -->
+    <div class="monthly-plan-section">
+      <div class="monthly-plan-header" onclick="toggleMonthlySection()">
+        <div class="header-left">
+          <span class="title">월 계획</span>
+          <span class="monthly-progress" id="monthlyProgress">0/0</span>
+        </div>
+        <span class="monthly-toggle" id="monthlyToggle">&#9660;</span>
+      </div>
+      <div class="monthly-plan-body" id="monthlyPlanBody" style="display:none;">
+        <div id="monthlyItems"></div>
+        <div class="monthly-add-row">
+          <input type="text" id="newMonthlyItemInput" placeholder="월 계획 항목 추가..."
+                 onkeydown="if(event.key==='Enter')addMonthlyItem()">
+          <button onclick="addMonthlyItem()">추가</button>
+        </div>
+      </div>
     </div>
 
     <!-- Additional items -->
     <div class="checklist-section">
-      <div class="section-title">추가 항목</div>
+      <div class="section-title">체크리스트</div>
       <div id="additionalItems"></div>
     </div>
 
-    <!-- Add new -->
-    <div class="add-item-container">
-      <input type="text" id="newItemInput" placeholder="새 항목 추가..."
-             onkeydown="if(event.key==='Enter')addItem()">
-      <button onclick="addItem()">추가</button>
+    <!-- Add new (multi-row UI) -->
+    <div class="add-item-wrapper">
+      <div class="add-item-row">
+        <input type="text" class="text-input" id="newItemInput" placeholder="새 항목 추가..."
+               onkeydown="if(event.key==='Enter')addItem()">
+      </div>
+      <div class="add-item-row">
+        <div class="time-group">
+          <input type="time" id="newItemDeadline">
+          <span class="until-label">까지</span>
+        </div>
+        <div class="priority-group">
+          <button class="priority-btn" data-priority="A" onclick="togglePriority('A')">A</button>
+          <button class="priority-btn" data-priority="B" onclick="togglePriority('B')">B</button>
+          <button class="priority-btn" data-priority="C" onclick="togglePriority('C')">C</button>
+        </div>
+        <button class="add-btn" onclick="addItem()">추가</button>
+      </div>
     </div>
   </div>
 
@@ -699,39 +927,9 @@
       </div>
     </div>
 
-    <!-- Template Editor -->
-    <div class="settings-section">
-      <h3>고정 템플릿 편집</h3>
-      <p style="font-size:13px;color:var(--text-light);margin-bottom:12px;">
-        매일 자동으로 추가되는 항목입니다
-      </p>
-      <div id="templateList"></div>
-      <div class="template-add-row">
-        <input type="text" id="newTemplateName" placeholder="새 템플릿 항목..."
-               onkeydown="if(event.key==='Enter')addTemplate()">
-        <button class="btn btn-primary btn-sm" onclick="addTemplate()">추가</button>
-      </div>
-      <button class="btn btn-primary" onclick="saveTemplates()" style="width:100%;margin-top:12px;">
-        템플릿 저장
-      </button>
-    </div>
-
-    <!-- Local Fallback Templates -->
-    <div class="settings-section">
-      <h3>로컬 기본 템플릿</h3>
-      <p style="font-size:13px;color:var(--text-light);margin-bottom:8px;">
-        서버 연결 전 사용되는 기본 항목 (쉼표로 구분)
-      </p>
-      <input type="text" class="api-url-input" id="localTemplateInput"
-             placeholder="물 2L 마시기, 운동 30분, 독서 20분">
-      <button class="btn btn-outline btn-sm" onclick="saveLocalTemplates()" style="margin-top:8px;">
-        로컬 저장
-      </button>
-    </div>
-
     <!-- App Info -->
     <div class="settings-section" style="text-align:center;">
-      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v1.0</p>
+      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v2.0</p>
       <p style="font-size:12px;color:var(--text-light);margin-top:4px;">PWA - 오프라인 지원</p>
     </div>
   </div>
@@ -761,31 +959,26 @@
     // ==========================================
     let currentDate = new Date();
     let checklistItems = [];
-    let templates = [];
+    let monthlyPlanItems = [];
+    let selectedPriority = null;
     let weekEvents = {};
 
     const API_URL_KEY = 'daily_app_api_url';
     const LOCAL_DATA_PREFIX = 'daily_checklist_';
-    const LOCAL_TEMPLATES_KEY = 'daily_templates_local';
+    const MONTHLY_PLAN_PREFIX = 'monthly_plan_';
 
     // ==========================================
     // Initialization
     // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
-      // Load saved API URL
       const savedUrl = localStorage.getItem(API_URL_KEY);
       if (savedUrl) {
         document.getElementById('apiUrlInput').value = savedUrl;
       }
 
-      // Load local templates
-      const localTmpl = localStorage.getItem(LOCAL_TEMPLATES_KEY);
-      if (localTmpl) {
-        document.getElementById('localTemplateInput').value = localTmpl;
-      }
-
       updateDateDisplay();
       loadChecklist();
+      loadMonthlyPlan();
       registerServiceWorker();
     });
 
@@ -815,7 +1008,6 @@
       } else {
         document.getElementById('headerTitle').textContent = '설정';
         document.getElementById('dateNav').style.display = 'none';
-        loadTemplateEditor();
         updateConnectionStatus();
       }
     }
@@ -837,6 +1029,11 @@
       return `${m}월 ${day}일 (${dow})`;
     }
 
+    function getYearMonth() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
     function updateDateDisplay() {
       const today = new Date();
       const dateStr = formatDisplayDate(currentDate);
@@ -849,7 +1046,6 @@
       updateDateDisplay();
       loadChecklist();
 
-      // Reload calendar if active
       if (document.getElementById('tab-calendar').classList.contains('active')) {
         loadCalendar();
       }
@@ -904,12 +1100,100 @@
     }
 
     // ==========================================
+    // Monthly Plan Logic
+    // ==========================================
+    function loadMonthlyPlan() {
+      const ym = getYearMonth();
+      const data = localStorage.getItem(MONTHLY_PLAN_PREFIX + ym);
+      monthlyPlanItems = data ? JSON.parse(data) : [];
+      renderMonthlyPlan();
+    }
+
+    function saveMonthlyPlanData() {
+      const ym = getYearMonth();
+      localStorage.setItem(MONTHLY_PLAN_PREFIX + ym, JSON.stringify(monthlyPlanItems));
+
+      if (getApiUrl()) {
+        apiPost({ action: 'saveMonthlyPlan', yearMonth: ym, items: monthlyPlanItems });
+      }
+    }
+
+    function toggleMonthlySection() {
+      const body = document.getElementById('monthlyPlanBody');
+      const toggle = document.getElementById('monthlyToggle');
+      const isOpen = body.style.display !== 'none';
+      body.style.display = isOpen ? 'none' : 'block';
+      toggle.classList.toggle('open', !isOpen);
+    }
+
+    function renderMonthlyPlan() {
+      const done = monthlyPlanItems.filter(i => i.done).length;
+      const total = monthlyPlanItems.length;
+      document.getElementById('monthlyProgress').textContent = `${done}/${total}`;
+
+      const container = document.getElementById('monthlyItems');
+      if (monthlyPlanItems.length === 0) {
+        container.innerHTML = '<div style="padding:8px 0;color:var(--text-light);font-size:13px;">월 계획 항목이 없습니다</div>';
+        return;
+      }
+
+      container.innerHTML = monthlyPlanItems.map(item => `
+        <div class="monthly-item ${item.done ? 'done' : ''}">
+          <div class="checkbox" onclick="toggleMonthlyItem('${item.id}')"></div>
+          <span class="monthly-name">${escapeHtml(item.name)}</span>
+          <button class="delete-btn" onclick="deleteMonthlyItem('${item.id}')">&times;</button>
+        </div>
+      `).join('');
+    }
+
+    function toggleMonthlyItem(id) {
+      const item = monthlyPlanItems.find(i => i.id === id);
+      if (!item) return;
+      item.done = !item.done;
+      saveMonthlyPlanData();
+      renderMonthlyPlan();
+    }
+
+    function deleteMonthlyItem(id) {
+      monthlyPlanItems = monthlyPlanItems.filter(i => i.id !== id);
+      saveMonthlyPlanData();
+      renderMonthlyPlan();
+    }
+
+    function addMonthlyItem() {
+      const input = document.getElementById('newMonthlyItemInput');
+      const name = input.value.trim();
+      if (!name) return;
+
+      monthlyPlanItems.push({
+        id: 'm' + Date.now(),
+        name: name,
+        done: false,
+        order: monthlyPlanItems.length + 1
+      });
+
+      input.value = '';
+      saveMonthlyPlanData();
+      renderMonthlyPlan();
+      showToast('월 계획 항목 추가됨');
+    }
+
+    // ==========================================
+    // Priority Toggle
+    // ==========================================
+    function togglePriority(p) {
+      selectedPriority = selectedPriority === p ? null : p;
+      document.querySelectorAll('.priority-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.priority === selectedPriority);
+      });
+    }
+
+    // ==========================================
     // Checklist Logic
     // ==========================================
     async function loadChecklist() {
       const dateStr = formatDate(currentDate);
 
-      // Try API first
       if (getApiUrl()) {
         showLoading(true);
         const data = await apiGet('getChecklist', { date: dateStr });
@@ -923,49 +1207,69 @@
         }
       }
 
-      // Fallback to local storage
       const local = loadLocalChecklist(dateStr);
-      if (local) {
-        checklistItems = local;
-      } else {
-        // Create from local templates
-        checklistItems = getLocalTemplateItems();
-        saveLocalChecklist(dateStr, checklistItems);
-      }
+      checklistItems = local || [];
       renderChecklist();
     }
 
-    function getLocalTemplateItems() {
-      const tmplStr = localStorage.getItem(LOCAL_TEMPLATES_KEY) || '물 2L 마시기, 운동 30분, 독서 20분, 일기 쓰기';
-      return tmplStr.split(',').map((name, i) => ({
-        name: name.trim(),
-        done: false,
-        type: '고정',
-        order: i + 1,
-        id: 'l' + Date.now() + i
-      })).filter(item => item.name);
-    }
-
     function renderChecklist() {
-      const fixed = checklistItems.filter(i => i.type === '고정');
-      const additional = checklistItems.filter(i => i.type === '추가');
+      const priorityOrder = { A: 1, B: 2, C: 3 };
+      const sorted = [...checklistItems].sort((a, b) => {
+        const pa = priorityOrder[a.priority] || 4;
+        const pb = priorityOrder[b.priority] || 4;
+        if (pa !== pb) return pa - pb;
+        return (a.order || 0) - (b.order || 0);
+      });
 
-      document.getElementById('fixedItems').innerHTML = fixed.map(item => renderItem(item)).join('');
-      document.getElementById('additionalItems').innerHTML = additional.length > 0
-        ? additional.map(item => renderItem(item)).join('')
-        : '<div style="padding:8px;color:var(--text-light);font-size:13px;">추가 항목 없음</div>';
+      const container = document.getElementById('additionalItems');
+      container.innerHTML = sorted.length > 0
+        ? sorted.map(item => renderItem(item)).join('')
+        : '<div style="padding:8px;color:var(--text-light);font-size:13px;">항목 없음 - 아래에서 추가하세요</div>';
 
       updateProgress();
     }
 
     function renderItem(item) {
+      const priorityBadge = item.priority
+        ? `<span class="priority-badge ${item.priority}">${item.priority}</span>`
+        : '';
+
+      let deadlineHtml = '';
+      if (item.deadline) {
+        const isOverdue = isDeadlineOverdue(item);
+        const displayTime = formatDeadlineDisplay(item.deadline);
+        deadlineHtml = `<div class="deadline-text ${isOverdue ? 'overdue' : ''}">${displayTime}까지</div>`;
+      }
+
       return `
         <div class="checklist-item ${item.done ? 'done' : ''}" data-id="${item.id}">
           <div class="checkbox" onclick="toggleItem('${item.id}')"></div>
-          <span class="item-name">${escapeHtml(item.name)}</span>
+          ${priorityBadge}
+          <div class="item-content">
+            <span class="item-name">${escapeHtml(item.name)}</span>
+            ${deadlineHtml}
+          </div>
           <button class="delete-btn" onclick="deleteItem('${item.id}')">&times;</button>
         </div>
       `;
+    }
+
+    function isDeadlineOverdue(item) {
+      if (!item.deadline) return false;
+      const today = formatDate(new Date());
+      const dateStr = formatDate(currentDate);
+      if (dateStr !== today) return false;
+
+      const now = new Date();
+      const [h, m] = item.deadline.split(':').map(Number);
+      return now.getHours() > h || (now.getHours() === h && now.getMinutes() > m);
+    }
+
+    function formatDeadlineDisplay(timeStr) {
+      const [h, m] = timeStr.split(':').map(Number);
+      const period = h < 12 ? '오전' : '오후';
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      return `${period} ${h12}:${String(m).padStart(2, '0')}`;
     }
 
     function escapeHtml(text) {
@@ -1003,16 +1307,25 @@
       const name = input.value.trim();
       if (!name) return;
 
+      const deadlineInput = document.getElementById('newItemDeadline');
+      const deadline = deadlineInput.value || null;
+
       const maxOrder = checklistItems.reduce((max, i) => Math.max(max, i.order || 0), 0);
       checklistItems.push({
         name: name,
         done: false,
         type: '추가',
         order: maxOrder + 1,
-        id: 'a' + Date.now()
+        id: 'a' + Date.now(),
+        deadline: deadline,
+        priority: selectedPriority
       });
 
       input.value = '';
+      deadlineInput.value = '';
+      selectedPriority = null;
+      document.querySelectorAll('.priority-btn').forEach(btn => btn.classList.remove('active'));
+
       renderChecklist();
       await saveChecklist();
       showToast('항목 추가됨');
@@ -1031,7 +1344,6 @@
       }
     }
 
-    // Local Storage
     function saveLocalChecklist(dateStr, items) {
       localStorage.setItem(LOCAL_DATA_PREFIX + dateStr, JSON.stringify(items));
     }
@@ -1062,7 +1374,6 @@
         }
       }
 
-      // No API - show empty
       renderEvents([]);
     }
 
@@ -1134,98 +1445,6 @@
     }
 
     // ==========================================
-    // Settings - Templates
-    // ==========================================
-    async function loadTemplateEditor() {
-      // Try loading from API
-      if (getApiUrl()) {
-        const data = await apiGet('getTemplates');
-        if (data && !data.error && data.templates) {
-          templates = data.templates;
-          renderTemplateList();
-          return;
-        }
-      }
-
-      // Fallback: parse local templates
-      const tmplStr = localStorage.getItem(LOCAL_TEMPLATES_KEY) || '물 2L 마시기, 운동 30분, 독서 20분, 일기 쓰기';
-      templates = tmplStr.split(',').map((name, i) => ({
-        name: name.trim(),
-        order: i + 1,
-        id: 't' + i
-      })).filter(t => t.name);
-
-      renderTemplateList();
-    }
-
-    function renderTemplateList() {
-      const container = document.getElementById('templateList');
-      container.innerHTML = templates.map((t, idx) => `
-        <div class="setting-row" data-idx="${idx}">
-          <span class="drag-handle">&#9776;</span>
-          <span class="template-name">${escapeHtml(t.name)}</span>
-          <button class="remove-btn" onclick="removeTemplate(${idx})">&times;</button>
-        </div>
-      `).join('');
-
-      // Simple drag-and-drop reorder
-      setupDragReorder(container);
-    }
-
-    function addTemplate() {
-      const input = document.getElementById('newTemplateName');
-      const name = input.value.trim();
-      if (!name) return;
-
-      templates.push({
-        name: name,
-        order: templates.length + 1,
-        id: 't' + Date.now()
-      });
-
-      input.value = '';
-      renderTemplateList();
-      showToast('항목 추가됨');
-    }
-
-    function removeTemplate(idx) {
-      templates.splice(idx, 1);
-      templates.forEach((t, i) => t.order = i + 1);
-      renderTemplateList();
-    }
-
-    async function saveTemplates() {
-      templates.forEach((t, i) => t.order = i + 1);
-
-      // Save to local as well
-      const names = templates.map(t => t.name).join(', ');
-      localStorage.setItem(LOCAL_TEMPLATES_KEY, names);
-      document.getElementById('localTemplateInput').value = names;
-
-      if (getApiUrl()) {
-        showLoading(true);
-        const result = await apiPost({
-          action: 'saveTemplates',
-          templates: templates
-        });
-        showLoading(false);
-
-        if (result && result.success) {
-          showToast('서버에 저장 완료');
-          return;
-        }
-      }
-
-      showToast('로컬에 저장 완료');
-    }
-
-    function saveLocalTemplates() {
-      const input = document.getElementById('localTemplateInput');
-      localStorage.setItem(LOCAL_TEMPLATES_KEY, input.value);
-      showToast('로컬 템플릿 저장됨');
-    }
-
-    // ==========================================
     // Settings - API Connection
     // ==========================================
     function saveApiUrl() {
@@ -1249,7 +1468,7 @@
       }
 
       showLoading(true);
-      const data = await apiGet('getTemplates');
+      const data = await apiGet('ping');
       showLoading(false);
 
       if (data && !data.error) {
@@ -1272,46 +1491,6 @@
         badge.textContent = hasUrl ? '연결 실패' : '미연결';
         badge.className = 'status-badge disconnected';
       }
-    }
-
-    // ==========================================
-    // Drag Reorder (simple touch-based)
-    // ==========================================
-    function setupDragReorder(container) {
-      let dragIdx = null;
-
-      container.querySelectorAll('.drag-handle').forEach((handle, idx) => {
-        handle.addEventListener('touchstart', (e) => {
-          e.preventDefault();
-          dragIdx = idx;
-          handle.closest('.setting-row').style.background = '#f0f4ff';
-        });
-      });
-
-      container.addEventListener('touchend', (e) => {
-        if (dragIdx === null) return;
-
-        const touch = e.changedTouches[0];
-        const rows = container.querySelectorAll('.setting-row');
-        let targetIdx = dragIdx;
-
-        rows.forEach((row, i) => {
-          const rect = row.getBoundingClientRect();
-          if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-            targetIdx = i;
-          }
-        });
-
-        if (targetIdx !== dragIdx) {
-          const [moved] = templates.splice(dragIdx, 1);
-          templates.splice(targetIdx, 0, moved);
-          renderTemplateList();
-        } else {
-          rows[dragIdx].style.background = '';
-        }
-
-        dragIdx = null;
-      });
     }
 
     // ==========================================

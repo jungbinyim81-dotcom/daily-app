@@ -15,7 +15,7 @@
 
 // 시트 이름 상수
 const CHECKLIST_SHEET = '체크리스트';
-const TEMPLATE_SHEET = '템플릿';
+const MONTHLY_PLAN_SHEET = '월계획';
 
 /**
  * 초기 시트 구조 세팅 (최초 1회 실행)
@@ -23,31 +23,22 @@ const TEMPLATE_SHEET = '템플릿';
 function setupSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  // 체크리스트 시트
+  // 체크리스트 시트 (8열: 날짜, 항목명, 완료여부, 타입, 순서, ID, 마감시간, 우선순위)
   let clSheet = ss.getSheetByName(CHECKLIST_SHEET);
   if (!clSheet) {
     clSheet = ss.insertSheet(CHECKLIST_SHEET);
-    clSheet.getRange('A1:F1').setValues([['날짜', '항목명', '완료여부', '타입', '순서', 'ID']]);
-    clSheet.getRange('A1:F1').setFontWeight('bold');
+    clSheet.getRange('A1:H1').setValues([['날짜', '항목명', '완료여부', '타입', '순서', 'ID', '마감시간', '우선순위']]);
+    clSheet.getRange('A1:H1').setFontWeight('bold');
     clSheet.setFrozenRows(1);
   }
 
-  // 템플릿 시트
-  let tmplSheet = ss.getSheetByName(TEMPLATE_SHEET);
-  if (!tmplSheet) {
-    tmplSheet = ss.insertSheet(TEMPLATE_SHEET);
-    tmplSheet.getRange('A1:C1').setValues([['항목명', '순서', 'ID']]);
-    tmplSheet.getRange('A1:C1').setFontWeight('bold');
-    tmplSheet.setFrozenRows(1);
-
-    // 기본 템플릿 항목 예시
-    const defaults = [
-      ['물 2L 마시기', 1, generateId()],
-      ['운동 30분', 2, generateId()],
-      ['독서 20분', 3, generateId()],
-      ['일기 쓰기', 4, generateId()],
-    ];
-    tmplSheet.getRange(2, 1, defaults.length, 3).setValues(defaults);
+  // 월계획 시트
+  let mpSheet = ss.getSheetByName(MONTHLY_PLAN_SHEET);
+  if (!mpSheet) {
+    mpSheet = ss.insertSheet(MONTHLY_PLAN_SHEET);
+    mpSheet.getRange('A1:E1').setValues([['연월', '항목명', '완료여부', '순서', 'ID']]);
+    mpSheet.getRange('A1:E1').setFontWeight('bold');
+    mpSheet.setFrozenRows(1);
   }
 }
 
@@ -73,8 +64,11 @@ function doGet(e) {
       case 'getCalendar':
         result = getCalendar(e.parameter.date);
         break;
-      case 'getTemplates':
-        result = getTemplates();
+      case 'getMonthlyPlan':
+        result = getMonthlyPlan(e.parameter.yearMonth);
+        break;
+      case 'ping':
+        result = { ok: true };
         break;
       default:
         result = { error: 'Unknown action: ' + action };
@@ -101,8 +95,8 @@ function doPost(e) {
       case 'saveChecklist':
         result = saveChecklist(data.date, data.items);
         break;
-      case 'saveTemplates':
-        result = saveTemplates(data.templates);
+      case 'saveMonthlyPlan':
+        result = saveMonthlyPlan(data.yearMonth, data.items);
         break;
       default:
         result = { error: 'Unknown action: ' + action };
@@ -117,62 +111,45 @@ function doPost(e) {
 
 /**
  * 해당 날짜의 체크리스트 가져오기
- * 해당 날짜 데이터가 없으면 템플릿에서 자동 생성
  */
 function getChecklist(dateStr) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(CHECKLIST_SHEET);
 
   if (!sheet || sheet.getLastRow() < 2) {
-    // 데이터가 없으면 템플릿에서 생성
-    return createFromTemplate(dateStr);
+    return { date: dateStr, items: [] };
   }
 
-  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 6).getValues();
+  const lastCol = Math.max(sheet.getLastColumn(), 8);
+  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, lastCol).getValues();
   const items = data
     .filter(row => {
+      if (!row[0]) return false;
       const rowDate = Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd');
       return rowDate === dateStr;
     })
     .map(row => ({
       name: row[1],
-      done: row[2] === true || row[2] === 'TRUE' || row[2] === true,
-      type: row[3],
+      done: row[2] === true || row[2] === 'TRUE',
+      type: row[3] || '추가',
       order: row[4],
-      id: row[5]
+      id: row[5],
+      deadline: row[6] || null,
+      priority: row[7] || null
     }))
-    .sort((a, b) => a.order - b.order);
-
-  if (items.length === 0) {
-    return createFromTemplate(dateStr);
-  }
-
-  return { date: dateStr, items: items };
-}
-
-/**
- * 템플릿에서 오늘의 체크리스트 자동 생성
- */
-function createFromTemplate(dateStr) {
-  const templates = getTemplates().templates;
-  const items = templates.map(t => ({
-    name: t.name,
-    done: false,
-    type: '고정',
-    order: t.order,
-    id: generateId()
-  }));
-
-  // 시트에 저장
-  if (items.length > 0) {
-    saveChecklist(dateStr, items);
-  }
+    .sort((a, b) => {
+      const pOrder = { A: 1, B: 2, C: 3 };
+      const pa = pOrder[a.priority] || 4;
+      const pb = pOrder[b.priority] || 4;
+      if (pa !== pb) return pa - pb;
+      return (a.order || 0) - (b.order || 0);
+    });
 
   return { date: dateStr, items: items };
 }
 
 /**
- * 체크리스트 저장 (해당 날짜 전체 덮어쓰기)
+ * 체크리스트 저장 (해당 날짜 전체 덮어쓰기, 8열)
  */
 function saveChecklist(dateStr, items) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -184,17 +161,88 @@ function saveChecklist(dateStr, items) {
 
   // 기존 해당 날짜 데이터 삭제
   if (sheet.getLastRow() >= 2) {
-    const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 6).getValues();
+    const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
     const rowsToDelete = [];
 
     for (let i = data.length - 1; i >= 0; i--) {
+      if (!data[i][0]) continue;
       const rowDate = Utilities.formatDate(new Date(data[i][0]), Session.getScriptTimeZone(), 'yyyy-MM-dd');
       if (rowDate === dateStr) {
-        rowsToDelete.push(i + 2); // 1-indexed + header
+        rowsToDelete.push(i + 2);
       }
     }
 
-    // 뒤에서부터 삭제 (인덱스 밀림 방지)
+    for (const row of rowsToDelete) {
+      sheet.deleteRow(row);
+    }
+  }
+
+  // 새 데이터 추가 (8열)
+  if (items.length > 0) {
+    const newRows = items.map((item, idx) => [
+      dateStr,
+      item.name,
+      item.done || false,
+      item.type || '추가',
+      item.order !== undefined ? item.order : idx + 1,
+      item.id || generateId(),
+      item.deadline || '',
+      item.priority || ''
+    ]);
+
+    sheet.getRange(sheet.getLastRow() + 1, 1, newRows.length, 8).setValues(newRows);
+  }
+
+  return { success: true, date: dateStr, count: items.length };
+}
+
+/**
+ * 월 계획 가져오기
+ */
+function getMonthlyPlan(yearMonth) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(MONTHLY_PLAN_SHEET);
+
+  if (!sheet || sheet.getLastRow() < 2) {
+    return { yearMonth: yearMonth, items: [] };
+  }
+
+  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 5).getValues();
+  const items = data
+    .filter(row => row[0] === yearMonth)
+    .map(row => ({
+      name: row[1],
+      done: row[2] === true || row[2] === 'TRUE',
+      order: row[3],
+      id: row[4]
+    }))
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  return { yearMonth: yearMonth, items: items };
+}
+
+/**
+ * 월 계획 저장 (해당 연월 전체 덮어쓰기)
+ */
+function saveMonthlyPlan(yearMonth, items) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(MONTHLY_PLAN_SHEET);
+
+  if (!sheet) {
+    return { error: 'Monthly plan sheet not found. Run setupSheets() first.' };
+  }
+
+  // 기존 해당 연월 데이터 삭제
+  if (sheet.getLastRow() >= 2) {
+    const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    const rowsToDelete = [];
+
+    for (let i = data.length - 1; i >= 0; i--) {
+      if (data[i][0] === yearMonth) {
+        rowsToDelete.push(i + 2);
+      }
+    }
+
     for (const row of rowsToDelete) {
       sheet.deleteRow(row);
     }
@@ -203,71 +251,17 @@ function saveChecklist(dateStr, items) {
   // 새 데이터 추가
   if (items.length > 0) {
     const newRows = items.map((item, idx) => [
-      dateStr,
+      yearMonth,
       item.name,
       item.done || false,
-      item.type || '추가',
       item.order !== undefined ? item.order : idx + 1,
       item.id || generateId()
     ]);
 
-    sheet.getRange(sheet.getLastRow() + 1, 1, newRows.length, 6).setValues(newRows);
+    sheet.getRange(sheet.getLastRow() + 1, 1, newRows.length, 5).setValues(newRows);
   }
 
-  return { success: true, date: dateStr, count: items.length };
-}
-
-/**
- * 템플릿 목록 가져오기
- */
-function getTemplates() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(TEMPLATE_SHEET);
-
-  if (!sheet || sheet.getLastRow() < 2) {
-    return { templates: [] };
-  }
-
-  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).getValues();
-  const templates = data
-    .filter(row => row[0] !== '')
-    .map(row => ({
-      name: row[0],
-      order: row[1],
-      id: row[2]
-    }))
-    .sort((a, b) => a.order - b.order);
-
-  return { templates: templates };
-}
-
-/**
- * 템플릿 저장 (전체 덮어쓰기)
- */
-function saveTemplates(templates) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(TEMPLATE_SHEET);
-
-  if (!sheet) {
-    return { error: 'Template sheet not found. Run setupSheets() first.' };
-  }
-
-  // 기존 데이터 삭제
-  if (sheet.getLastRow() >= 2) {
-    sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).clearContent();
-  }
-
-  // 새 데이터 추가
-  if (templates.length > 0) {
-    const newRows = templates.map((t, idx) => [
-      t.name,
-      t.order !== undefined ? t.order : idx + 1,
-      t.id || generateId()
-    ]);
-    sheet.getRange(2, 1, newRows.length, 3).setValues(newRows);
-  }
-
-  return { success: true, count: templates.length };
+  return { success: true, yearMonth: yearMonth, count: items.length };
 }
 
 /**
@@ -290,7 +284,7 @@ function getCalendar(dateStr) {
     description: event.getDescription() || ''
   }));
 
-  // 주간 일정도 함께 가져오기 (해당 주 월~일)
+  // 주간 일정도 함께 가져오기
   const dayOfWeek = date.getDay();
   const monday = new Date(date);
   monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
