@@ -964,7 +964,7 @@
     let weekEvents = {};
 
     const API_URL_KEY = 'daily_app_api_url';
-    const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbxOMQh1NYT1WnMSjfeHzGqYWtKhFjR3Uvd11z4Ab6xiN4W5Rk6nbYw33pQjThmRng0P/exec';
+    const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbz5oYnYCxLW_8sYMumq8_9JUKufIKeCOmKNgFII8RMuX3WOCYoNTh07-U4UeT8bwfoo-g/exec';
     const LOCAL_DATA_PREFIX = 'daily_checklist_';
     const MONTHLY_PLAN_PREFIX = 'monthly_plan_';
 
@@ -972,11 +972,9 @@
     // Initialization
     // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
-      const savedUrl = localStorage.getItem(API_URL_KEY) || DEFAULT_API_URL;
-      if (!localStorage.getItem(API_URL_KEY)) {
-        localStorage.setItem(API_URL_KEY, DEFAULT_API_URL);
-      }
-      document.getElementById('apiUrlInput').value = savedUrl;
+      // 항상 최신 URL로 강제 업데이트
+      localStorage.setItem(API_URL_KEY, DEFAULT_API_URL);
+      document.getElementById('apiUrlInput').value = DEFAULT_API_URL;
 
       updateDateDisplay();
       loadChecklist();
