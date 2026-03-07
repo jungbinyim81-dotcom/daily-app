@@ -67,6 +67,12 @@ function doGet(e) {
       case 'getMonthlyPlan':
         result = getMonthlyPlan(e.parameter.yearMonth);
         break;
+      case 'saveChecklist':
+        result = saveChecklist(e.parameter.date, JSON.parse(e.parameter.items));
+        break;
+      case 'saveMonthlyPlan':
+        result = saveMonthlyPlan(e.parameter.yearMonth, JSON.parse(e.parameter.items));
+        break;
       case 'ping':
         result = { ok: true };
         break;

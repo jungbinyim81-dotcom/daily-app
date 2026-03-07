@@ -1070,7 +1070,12 @@
       const url = getApiUrl();
       if (!url) return null;
 
-      const queryStr = new URLSearchParams({ action, ...params }).toString();
+      // items 배열은 JSON 문자열로 변환
+      const flatParams = {};
+      for (const [k, v] of Object.entries({ action, ...params })) {
+        flatParams[k] = typeof v === 'object' ? JSON.stringify(v) : v;
+      }
+      const queryStr = new URLSearchParams(flatParams).toString();
       try {
         const resp = await fetch(`${url}?${queryStr}`, { redirect: 'follow' });
         return await resp.json();
@@ -1081,22 +1086,8 @@
     }
 
     async function apiPost(data) {
-      const url = getApiUrl();
-      if (!url) return null;
-
-      try {
-        // no-cors: 리다이렉트 시 POST 데이터 유실 방지
-        await fetch(url, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(data)
-        });
-        return { success: true };
-      } catch (e) {
-        console.error('API POST error:', e);
-        return null;
-      }
+      // GET 방식으로 저장 (POST CORS 문제 우회)
+      return await apiGet(data.action, data);
     }
 
     function showLoading(show) {
