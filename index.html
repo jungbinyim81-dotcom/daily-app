@@ -1072,7 +1072,7 @@
 
       const queryStr = new URLSearchParams({ action, ...params }).toString();
       try {
-        const resp = await fetch(`${url}?${queryStr}`);
+        const resp = await fetch(`${url}?${queryStr}`, { redirect: 'follow' });
         return await resp.json();
       } catch (e) {
         console.error('API GET error:', e);
@@ -1087,6 +1087,7 @@
       try {
         const resp = await fetch(url, {
           method: 'POST',
+          redirect: 'follow',
           headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(data)
         });
@@ -1104,10 +1105,21 @@
     // ==========================================
     // Monthly Plan Logic
     // ==========================================
-    function loadMonthlyPlan() {
+    async function loadMonthlyPlan() {
       const ym = getYearMonth();
-      const data = localStorage.getItem(MONTHLY_PLAN_PREFIX + ym);
-      monthlyPlanItems = data ? JSON.parse(data) : [];
+
+      if (getApiUrl()) {
+        const data = await apiGet('getMonthlyPlan', { yearMonth: ym });
+        if (data && !data.error) {
+          monthlyPlanItems = data.items || [];
+          localStorage.setItem(MONTHLY_PLAN_PREFIX + ym, JSON.stringify(monthlyPlanItems));
+          renderMonthlyPlan();
+          return;
+        }
+      }
+
+      const local = localStorage.getItem(MONTHLY_PLAN_PREFIX + ym);
+      monthlyPlanItems = local ? JSON.parse(local) : [];
       renderMonthlyPlan();
     }
 
