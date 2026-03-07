@@ -1085,13 +1085,14 @@
       if (!url) return null;
 
       try {
-        const resp = await fetch(url, {
+        // no-cors: 리다이렉트 시 POST 데이터 유실 방지
+        await fetch(url, {
           method: 'POST',
-          redirect: 'follow',
+          mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(data)
         });
-        return await resp.json();
+        return { success: true };
       } catch (e) {
         console.error('API POST error:', e);
         return null;
@@ -1111,8 +1112,16 @@
       if (getApiUrl()) {
         const data = await apiGet('getMonthlyPlan', { yearMonth: ym });
         if (data && !data.error) {
-          monthlyPlanItems = data.items || [];
-          localStorage.setItem(MONTHLY_PLAN_PREFIX + ym, JSON.stringify(monthlyPlanItems));
+          const remoteItems = data.items || [];
+          const localRaw = localStorage.getItem(MONTHLY_PLAN_PREFIX + ym);
+          const localItems = localRaw ? JSON.parse(localRaw) : [];
+          // 원격 데이터가 있으면 사용, 없으면 로컬 유지
+          if (remoteItems.length > 0 || localItems.length === 0) {
+            monthlyPlanItems = remoteItems;
+            localStorage.setItem(MONTHLY_PLAN_PREFIX + ym, JSON.stringify(monthlyPlanItems));
+          } else {
+            monthlyPlanItems = localItems;
+          }
           renderMonthlyPlan();
           return;
         }
@@ -1214,8 +1223,15 @@
         showLoading(false);
 
         if (data && !data.error) {
-          checklistItems = data.items || [];
-          saveLocalChecklist(dateStr, checklistItems);
+          const remoteItems = data.items || [];
+          const localItems = loadLocalChecklist(dateStr) || [];
+          // 원격 데이터가 있으면 사용, 없으면 로컬 유지
+          if (remoteItems.length > 0 || localItems.length === 0) {
+            checklistItems = remoteItems;
+            saveLocalChecklist(dateStr, checklistItems);
+          } else {
+            checklistItems = localItems;
+          }
           renderChecklist();
           return;
         }
@@ -1350,11 +1366,12 @@
       saveLocalChecklist(dateStr, checklistItems);
 
       if (getApiUrl()) {
-        await apiPost({
+        const result = await apiPost({
           action: 'saveChecklist',
           date: dateStr,
           items: checklistItems
         });
+        if (!result) showToast('⚠️ 서버 저장 실패 (로컬에는 저장됨)');
       }
     }
 
