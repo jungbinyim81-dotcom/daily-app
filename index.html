@@ -1285,11 +1285,18 @@
     }
 
     function formatDeadlineDisplay(timeStr) {
-      if (!timeStr || typeof timeStr !== 'string') return '';
-      const parts = timeStr.split(':');
-      const h = parseInt(parts[0], 10);
-      const m = parseInt(parts[1], 10);
-      if (isNaN(h) || isNaN(m)) return timeStr;
+      if (!timeStr) return '';
+      let h, m;
+      // ISO 날짜 문자열인 경우 (구글 시트 자동 변환)
+      if (typeof timeStr === 'string' && (timeStr.includes('T') || timeStr.includes('-'))) {
+        const d = new Date(timeStr);
+        if (!isNaN(d.getTime())) { h = d.getHours(); m = d.getMinutes(); }
+      } else {
+        const parts = String(timeStr).split(':');
+        h = parseInt(parts[0], 10);
+        m = parseInt(parts[1], 10);
+      }
+      if (isNaN(h) || isNaN(m)) return String(timeStr);
       const period = h < 12 ? '오전' : '오후';
       const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
       return `${period} ${h12}:${String(m).padStart(2, '0')}`;

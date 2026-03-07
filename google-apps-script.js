@@ -140,7 +140,7 @@ function getChecklist(dateStr) {
       type: row[3] || '추가',
       order: row[4],
       id: row[5],
-      deadline: row[6] || null,
+      deadline: row[6] ? (row[6] instanceof Date ? Utilities.formatDate(row[6], Session.getScriptTimeZone(), 'HH:mm') : String(row[6])) : null,
       priority: row[7] || null
     }))
     .sort((a, b) => {
