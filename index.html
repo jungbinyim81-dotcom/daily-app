@@ -602,105 +602,277 @@
       background: var(--primary-dark);
     }
 
-    /* Calendar Tab */
-    .mini-calendar {
+    /* Stats Tab */
+    .stats-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .period-toggle {
+      display: flex;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 3px;
+      box-shadow: var(--shadow);
+    }
+
+    .period-toggle button {
+      border: none;
+      background: none;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    .period-toggle button.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .period-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 3px 6px;
+      box-shadow: var(--shadow);
+    }
+
+    .period-nav button {
+      border: none;
+      background: none;
+      font-size: 13px;
+      padding: 6px 8px;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .period-nav .period-label {
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 96px;
+      text-align: center;
+    }
+
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 14px 8px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card .num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .stat-card .num.good { color: var(--success); }
+    .stat-card .num.bad { color: var(--danger); }
+
+    .stat-card .lbl {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .stats-section {
       background: var(--card);
       border-radius: var(--radius);
       padding: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       box-shadow: var(--shadow);
     }
 
-    .week-header {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      margin-bottom: 8px;
+    .stats-section h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .week-header span {
+    .stats-section .sub-note {
+      font-size: 11px;
+      color: var(--text-light);
+      font-weight: 400;
+      margin-left: auto;
+    }
+
+    /* 우선순위/카테고리 가로 바 */
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .bar-row .bar-name {
+      width: 74px;
       font-size: 12px;
       font-weight: 600;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bar-row .bar-track {
+      flex: 1;
+      height: 16px;
+      background: var(--bg);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .bar-row .bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      background: var(--primary);
+      transition: width 0.4s ease;
+    }
+
+    .bar-row .bar-val {
+      width: 78px;
+      font-size: 11px;
       color: var(--text-light);
+      text-align: right;
+      flex-shrink: 0;
     }
 
-    .week-header span:first-child {
-      color: var(--danger);
+    .prio-tag {
+      display: inline-flex;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 6px;
     }
 
-    .week-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      gap: 4px;
+    .prio-tag.A { background: var(--danger); }
+    .prio-tag.B { background: #F39C12; }
+    .prio-tag.C { background: var(--primary); }
+    .prio-tag.N { background: #95A5A6; }
+
+    /* 일별 추이 세로 바 차트 */
+    .day-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 90px;
+      padding-top: 14px;
     }
 
-    .week-day {
-      padding: 8px 0;
-      border-radius: 50%;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
+    .day-chart .day-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      min-width: 0;
+    }
+
+    .day-chart .day-bar {
+      width: 100%;
+      max-width: 26px;
+      border-radius: 4px 4px 0 0;
+      background: var(--primary-light);
+      min-height: 2px;
       position: relative;
     }
 
-    .week-day.today {
-      background: var(--primary);
-      color: white;
-    }
+    .day-chart .day-bar.full { background: var(--success); }
+    .day-chart .day-bar.zero { background: var(--border); }
 
-    .week-day.selected:not(.today) {
-      background: var(--primary-light);
-      color: white;
-    }
-
-    .week-day.has-events::after {
-      content: '';
-      position: absolute;
-      bottom: 2px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--primary);
-    }
-
-    .week-day.today.has-events::after {
-      background: white;
-    }
-
-    /* Event list */
-    .event-list {
-      margin-top: 12px;
-    }
-
-    .event-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 8px;
-      box-shadow: var(--shadow);
-      border-left: 4px solid var(--primary);
-    }
-
-    .event-card .event-time {
-      font-size: 12px;
-      color: var(--primary);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .event-card .event-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .event-card .event-location {
-      font-size: 13px;
+    .day-chart .day-lbl {
+      font-size: 9px;
       color: var(--text-light);
-      margin-top: 2px;
+      margin-top: 4px;
+      white-space: nowrap;
     }
+
+    .day-chart .day-col.today-col .day-lbl {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* 항목 리스트 (놓친/완료 TOP) */
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .rank-item:last-child { border-bottom: none; }
+
+    .rank-item .rank-no {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg);
+      color: var(--text-light);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rank-item .rank-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rank-item .rank-cnt {
+      font-size: 12px;
+      color: var(--text-light);
+      flex-shrink: 0;
+    }
+
+    .rank-item .rank-cnt b { color: var(--text); }
+
+    /* 인사이트 */
+    .insight-item {
+      display: flex;
+      gap: 8px;
+      padding: 8px 0;
+      font-size: 13px;
+      line-height: 1.55;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .insight-item:last-child { border-bottom: none; }
+
+    .insight-item .ico { flex-shrink: 0; }
 
     .empty-state {
       text-align: center;
@@ -894,20 +1066,22 @@
     </div>
   </div>
 
-  <!-- Tab 2: Calendar -->
-  <div class="tab-content" id="tab-calendar">
-    <!-- Mini calendar -->
-    <div class="mini-calendar">
-      <div class="week-header">
-        <span>일</span><span>월</span><span>화</span><span>수</span>
-        <span>목</span><span>금</span><span>토</span>
+  <!-- Tab 2: Stats -->
+  <div class="tab-content" id="tab-stats">
+    <!-- 기간 선택 -->
+    <div class="stats-toolbar">
+      <div class="period-toggle">
+        <button id="modeWeek" class="active" onclick="setStatsMode('week')">주간</button>
+        <button id="modeMonth" onclick="setStatsMode('month')">월간</button>
       </div>
-      <div class="week-days" id="weekDays"></div>
+      <div class="period-nav">
+        <button onclick="moveStatsPeriod(-1)">&#9664;</button>
+        <span class="period-label" id="statsPeriodLabel"></span>
+        <button onclick="moveStatsPeriod(1)">&#9654;</button>
+      </div>
     </div>
 
-    <!-- Events -->
-    <div class="section-title">일정</div>
-    <div class="event-list" id="eventList"></div>
+    <div id="statsBody"></div>
   </div>
 
   <!-- Tab 3: Settings -->
@@ -929,7 +1103,7 @@
 
     <!-- App Info -->
     <div class="settings-section" style="text-align:center;">
-      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v2.0</p>
+      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v3.0 (통계 분석)</p>
       <p style="font-size:12px;color:var(--text-light);margin-top:4px;">PWA - 오프라인 지원</p>
     </div>
   </div>
@@ -940,9 +1114,9 @@
       <span class="tab-icon">&#9745;</span>
       <span>체크리스트</span>
     </button>
-    <button class="tab-btn" onclick="switchTab('calendar', this)">
-      <span class="tab-icon">&#128197;</span>
-      <span>캘린더</span>
+    <button class="tab-btn" onclick="switchTab('stats', this)">
+      <span class="tab-icon">&#128202;</span>
+      <span>통계</span>
     </button>
     <button class="tab-btn" onclick="switchTab('settings', this)">
       <span class="tab-icon">&#9881;</span>
@@ -961,7 +1135,8 @@
     let checklistItems = [];
     let monthlyPlanItems = [];
     let selectedPriority = null;
-    let weekEvents = {};
+    let statsMode = 'week';          // 'week' | 'month'
+    let statsAnchor = new Date();    // 통계 기간 기준일
 
     const API_URL_KEY = 'daily_app_api_url';
     const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbz5oYnYCxLW_8sYMumq8_9JUKufIKeCOmKNgFII8RMuX3WOCYoNTh07-U4UeT8bwfoo-g/exec';
@@ -1001,10 +1176,10 @@
       if (tab === 'checklist') {
         document.getElementById('headerTitle').textContent = '오늘의 체크리스트';
         document.getElementById('dateNav').style.display = 'flex';
-      } else if (tab === 'calendar') {
-        document.getElementById('headerTitle').textContent = '캘린더';
-        document.getElementById('dateNav').style.display = 'flex';
-        loadCalendar();
+      } else if (tab === 'stats') {
+        document.getElementById('headerTitle').textContent = '통계 분석';
+        document.getElementById('dateNav').style.display = 'none';
+        loadStats();
       } else {
         document.getElementById('headerTitle').textContent = '설정';
         document.getElementById('dateNav').style.display = 'none';
@@ -1045,10 +1220,6 @@
       currentDate.setDate(currentDate.getDate() + delta);
       updateDateDisplay();
       loadChecklist();
-
-      if (document.getElementById('tab-calendar').classList.contains('active')) {
-        loadCalendar();
-      }
     }
 
     function goToday() {
@@ -1385,94 +1556,406 @@
     }
 
     // ==========================================
-    // Calendar Logic
+    // Stats Logic (통계 분석)
     // ==========================================
-    async function loadCalendar() {
-      const dateStr = formatDate(currentDate);
+    // 업무 거래처 감지 (병원/약국 등)
+    const WORK_PLACE_RE = /(병원|의원|약국|클리닉|내과|외과|정형|이비인후|소아과|피부과|비뇨|산부인과|안과|치과|한의원|보건소|메디컬|온누리)/;
 
-      renderWeekCalendar();
+    // 생활 카테고리 (먼저 매칭되는 순서대로 분류)
+    const CATEGORIES = [
+      { key: '업무',     re: /(병원|의원|약국|클리닉|내과|외과|정형|이비인후|소아과|피부과|비뇨|산부인과|안과|치과|한의원|보건소|메디컬|온누리|방명록|경비|실적|보고|미팅|회의|디테일|심포지|거래처|입력|결재|제출|발주|영업|지점|콜)/ },
+      { key: '건강/운동', re: /(운동|헬스|러닝|달리기|조깅|산책|걷기|스트레칭|요가|홈트|푸시업|스쿼트|금주|다이어트|체중|영양제|물\s*마시기|수면|일찍)/ },
+      { key: '자기계발',  re: /(공부|독서|책|강의|영어|학습|블로그|유튜브|글쓰기|자격증|코딩|명상|일기)/ },
+      { key: '재테크',    re: /(주식|투자|매수|매도|SOXL|soxl|적금|연금|리밸런싱|증권|코인|배당)/ },
+      { key: '가족/생활', re: /(가족|아내|와이프|아이|아들|딸|부모|어머니|아버지|장보기|청소|빨래|집안일|요리|설거지|은행|택배|미용실|세차|이사|선물|생일)/ }
+    ];
 
+    function categorize(name) {
+      for (const c of CATEGORIES) {
+        if (c.re.test(name)) return c.key;
+      }
+      return '기타';
+    }
+
+    function setStatsMode(mode) {
+      statsMode = mode;
+      statsAnchor = new Date();
+      document.getElementById('modeWeek').classList.toggle('active', mode === 'week');
+      document.getElementById('modeMonth').classList.toggle('active', mode === 'month');
+      loadStats();
+    }
+
+    function moveStatsPeriod(delta) {
+      if (statsMode === 'week') {
+        statsAnchor.setDate(statsAnchor.getDate() + delta * 7);
+      } else {
+        statsAnchor.setDate(1); // 말일 넘김 방지
+        statsAnchor.setMonth(statsAnchor.getMonth() + delta);
+      }
+      loadStats();
+    }
+
+    // 기간의 날짜 목록 + 라벨
+    function getStatsRange() {
+      const dates = [];
+      let label = '';
+      if (statsMode === 'week') {
+        const sunday = new Date(statsAnchor);
+        sunday.setDate(sunday.getDate() - sunday.getDay());
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(sunday);
+          d.setDate(sunday.getDate() + i);
+          dates.push(formatDate(d));
+        }
+        const end = new Date(sunday);
+        end.setDate(sunday.getDate() + 6);
+        label = `${sunday.getMonth() + 1}.${sunday.getDate()} ~ ${end.getMonth() + 1}.${end.getDate()}`;
+      } else {
+        const y = statsAnchor.getFullYear();
+        const m = statsAnchor.getMonth();
+        const lastDay = new Date(y, m + 1, 0).getDate();
+        for (let i = 1; i <= lastDay; i++) {
+          dates.push(formatDate(new Date(y, m, i)));
+        }
+        label = `${y}년 ${m + 1}월`;
+      }
+      return { dates, label };
+    }
+
+    // 기간 데이터 수집: 신규 range API → (구버전 폴백) 날짜별 조회 → 로컬
+    async function fetchRangeItems(dates) {
+      const days = {};
       if (getApiUrl()) {
-        showLoading(true);
-        const data = await apiGet('getCalendar', { date: dateStr });
-        showLoading(false);
+        const data = await apiGet('getChecklistRange', { start: dates[0], end: dates[dates.length - 1] });
+        if (data && !data.error && data.days) return data.days;
 
-        if (data && !data.error) {
-          weekEvents = data.weekEvents || {};
-          renderWeekCalendar();
-          renderEvents(data.events || []);
-          return;
+        // Apps Script가 구버전이면 날짜별 개별 조회로 폴백
+        const results = await Promise.all(dates.map(d => apiGet('getChecklist', { date: d })));
+        dates.forEach((d, i) => {
+          const r = results[i];
+          if (r && !r.error && r.items && r.items.length > 0) {
+            days[d] = r.items;
+          } else {
+            const loc = loadLocalChecklist(d);
+            if (loc && loc.length > 0) days[d] = loc;
+          }
+        });
+        return days;
+      }
+      // 오프라인: 로컬 데이터만
+      dates.forEach(d => {
+        const loc = loadLocalChecklist(d);
+        if (loc && loc.length > 0) days[d] = loc;
+      });
+      return days;
+    }
+
+    async function loadStats() {
+      const { dates, label } = getStatsRange();
+      document.getElementById('statsPeriodLabel').textContent = label;
+
+      showLoading(true);
+      const days = await fetchRangeItems(dates);
+      showLoading(false);
+
+      renderStats(dates, days);
+    }
+
+    function analyzeStats(dates, days) {
+      const todayStr = formatDate(new Date());
+      const flat = [];
+      dates.forEach(d => (days[d] || []).forEach(it => flat.push({ ...it, date: d })));
+
+      const total = flat.length;
+      const done = flat.filter(i => i.done).length;
+      const rate = total > 0 ? Math.round(done / total * 100) : 0;
+
+      // 우선순위별
+      const byPrio = { A: { t: 0, d: 0 }, B: { t: 0, d: 0 }, C: { t: 0, d: 0 }, N: { t: 0, d: 0 } };
+      flat.forEach(i => {
+        const p = byPrio[i.priority] ? i.priority : 'N';
+        byPrio[p].t++;
+        if (i.done) byPrio[p].d++;
+      });
+
+      // 일별 추이
+      const daily = dates.map(d => {
+        const items = days[d] || [];
+        const t = items.length;
+        const dn = items.filter(i => i.done).length;
+        return { date: d, t, d: dn, rate: t > 0 ? dn / t : null, isToday: d === todayStr, isFuture: d > todayStr };
+      });
+
+      const activeDays = daily.filter(x => x.t > 0).length;
+      const perfectDays = daily.filter(x => x.t > 0 && x.d === x.t).length;
+
+      // 항목명별 집계 (놓친/완료 TOP)
+      const missMap = {}, doneMap = {};
+      flat.forEach(i => {
+        const key = String(i.name).trim();
+        if (!key) return;
+        // 미래 날짜의 미완료는 '놓친 것'이 아님
+        if (i.done) doneMap[key] = (doneMap[key] || 0) + 1;
+        else if (i.date <= todayStr) missMap[key] = (missMap[key] || 0) + 1;
+      });
+      const topMissed = Object.entries(missMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const topDone = Object.entries(doneMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+      // 업무 거래처 (병원/약국)
+      const workItems = flat.filter(i => WORK_PLACE_RE.test(String(i.name)));
+      const workDone = workItems.filter(i => i.done).length;
+      const placeMap = {};
+      workItems.forEach(i => {
+        const key = String(i.name).trim();
+        if (!placeMap[key]) placeMap[key] = { t: 0, d: 0 };
+        placeMap[key].t++;
+        if (i.done) placeMap[key].d++;
+      });
+      const topPlaces = Object.entries(placeMap).sort((a, b) => b[1].t - a[1].t).slice(0, 7);
+
+      // 카테고리별
+      const catMap = {};
+      flat.forEach(i => {
+        const c = categorize(String(i.name));
+        if (!catMap[c]) catMap[c] = { t: 0, d: 0 };
+        catMap[c].t++;
+        if (i.done) catMap[c].d++;
+      });
+      const catList = Object.entries(catMap).sort((a, b) => b[1].t - a[1].t);
+
+      // 요일별 달성률 (2일 이상 데이터가 있을 때만 의미)
+      const dowNames = ['일', '월', '화', '수', '목', '금', '토'];
+      const dowMap = {};
+      daily.forEach(x => {
+        if (x.t === 0) return;
+        const dow = new Date(x.date + 'T00:00:00').getDay();
+        if (!dowMap[dow]) dowMap[dow] = { t: 0, d: 0, days: 0 };
+        dowMap[dow].t += x.t;
+        dowMap[dow].d += x.d;
+        dowMap[dow].days++;
+      });
+
+      // 마감시간 패턴 (완료 항목의 마감시각 평균)
+      const deadlineHours = flat
+        .filter(i => i.done && i.deadline)
+        .map(i => {
+          const s = String(i.deadline);
+          const m = s.match(/(\d{1,2}):(\d{2})/);
+          return m ? parseInt(m[1], 10) : null;
+        })
+        .filter(h => h !== null);
+
+      return { total, done, rate, byPrio, daily, activeDays, perfectDays,
+               topMissed, topDone, workItems, workDone, topPlaces,
+               catList, dowMap, dowNames, deadlineHours };
+    }
+
+    function buildInsights(s) {
+      const out = [];
+      if (s.total === 0) return out;
+
+      // 1. 전체 달성률 평가
+      if (s.rate >= 80) {
+        out.push(['&#127942;', `달성률 <b>${s.rate}%</b> — 계획한 일을 거의 다 해내고 있어요. 최상위권 실행력입니다.`]);
+      } else if (s.rate >= 60) {
+        out.push(['&#128170;', `달성률 <b>${s.rate}%</b> — 안정적으로 소화하고 있어요. 놓친 항목만 줄이면 완벽합니다.`]);
+      } else if (s.rate >= 40) {
+        out.push(['&#127793;', `달성률 <b>${s.rate}%</b> — 계획 대비 실행이 절반 수준이에요. 항목 수를 줄여 확실히 끝내는 전략도 좋아요.`]);
+      } else {
+        out.push(['&#128161;', `달성률 <b>${s.rate}%</b> — 계획이 실행보다 큰 시기예요. 하루 3개 이하 핵심 항목부터 다시 시작해보세요.`]);
+      }
+
+      // 2. 우선순위 스타일
+      const A = s.byPrio.A, prioSum = s.byPrio.A.t + s.byPrio.B.t + s.byPrio.C.t;
+      if (A.t >= 3) {
+        const aRate = Math.round(A.d / A.t * 100);
+        if (aRate >= s.rate + 10) {
+          out.push(['&#127919;', `A급 완료율 <b>${aRate}%</b> — 중요한 일부터 확실히 끝내는 스타일이에요. 우선순위 감각이 좋습니다.`]);
+        } else if (aRate <= s.rate - 15) {
+          out.push(['&#9888;&#65039;', `A급 완료율이 <b>${aRate}%</b>로 전체 평균보다 낮아요. 가장 중요한 일이 자주 밀리고 있으니 하루의 첫 일정으로 배치해보세요.`]);
+        }
+      }
+      if (prioSum === 0 && s.total >= 5) {
+        out.push(['&#128204;', `우선순위(A/B/C)를 지정한 항목이 없어요. A만이라도 표시하면 복기 정확도가 확 올라갑니다.`]);
+      }
+
+      // 3. 삶의 중심 카테고리
+      const topCat = s.catList.filter(c => c[0] !== '기타').sort((a, b) => b[1].d - a[1].d)[0];
+      if (topCat && topCat[1].d >= 3) {
+        const msgs = {
+          '업무': '완료한 일의 중심이 <b>업무</b>예요. 영업 루틴이 삶의 엔진으로 돌아가고 있습니다.',
+          '건강/운동': '완료한 일의 중심이 <b>건강/운동</b>이에요. 몸을 챙기는 사람이 결국 오래 이깁니다.',
+          '자기계발': '완료한 일의 중심이 <b>자기계발</b>이에요. 꾸준히 쌓이는 것들이 미래의 무기가 됩니다.',
+          '재테크': '완료한 일의 중심이 <b>재테크</b>예요. 돈이 일하게 만드는 습관을 만들고 있네요.',
+          '가족/생활': '완료한 일의 중심이 <b>가족/생활</b>이에요. 삶의 기반을 단단히 다지는 시기네요.'
+        };
+        out.push(['&#129517;', msgs[topCat[0]] || `완료한 일의 중심이 <b>${topCat[0]}</b>이에요.`]);
+      }
+
+      // 4. 강한 요일
+      const dowEntries = Object.entries(s.dowMap).filter(([, v]) => v.t >= 2);
+      if (dowEntries.length >= 3) {
+        const best = dowEntries.sort((a, b) => (b[1].d / b[1].t) - (a[1].d / a[1].t))[0];
+        const bestRate = Math.round(best[1].d / best[1].t * 100);
+        if (bestRate >= 60) {
+          out.push(['&#128197;', `<b>${s.dowNames[best[0]]}요일</b>이 가장 강해요 (달성률 ${bestRate}%). 어려운 일은 이 요일에 배치해보세요.`]);
         }
       }
 
-      renderEvents([]);
-    }
-
-    function renderWeekCalendar() {
-      const d = new Date(currentDate);
-      const dayOfWeek = d.getDay();
-      const sunday = new Date(d);
-      sunday.setDate(d.getDate() - dayOfWeek);
-
-      const today = formatDate(new Date());
-      const selected = formatDate(currentDate);
-
-      let html = '';
-      for (let i = 0; i < 7; i++) {
-        const day = new Date(sunday);
-        day.setDate(sunday.getDate() + i);
-        const ds = formatDate(day);
-        const classes = ['week-day'];
-
-        if (ds === today) classes.push('today');
-        if (ds === selected) classes.push('selected');
-        if (weekEvents[ds] && weekEvents[ds].length > 0) classes.push('has-events');
-
-        html += `<div class="${classes.join(' ')}" onclick="selectCalendarDay('${ds}')">${day.getDate()}</div>`;
+      // 5. 시간대 패턴
+      if (s.deadlineHours.length >= 3) {
+        const avg = s.deadlineHours.reduce((a, b) => a + b, 0) / s.deadlineHours.length;
+        if (avg < 12) {
+          out.push(['&#127749;', `완료한 일의 마감이 주로 <b>오전</b>이에요. 아침에 승부를 보는 타입 — 오전 집중력을 계속 활용하세요.`]);
+        } else if (avg >= 15) {
+          out.push(['&#127769;', `완료한 일의 마감이 주로 <b>오후~저녁</b>이에요. 후반 몰입형이니 오전엔 가벼운 일, 오후에 핵심 일정을 두는 게 맞아요.`]);
+        }
       }
 
-      document.getElementById('weekDays').innerHTML = html;
+      // 6. 100% 달성일
+      if (s.perfectDays >= 2) {
+        out.push(['&#10024;', `이 기간 <b>100% 달성일이 ${s.perfectDays}일</b>! 완벽한 하루의 감각을 이미 알고 있어요. 그 날의 항목 수와 구성을 복제하세요.`]);
+      }
+
+      // 7. 자주 놓친 항목 처방
+      if (s.topMissed.length > 0 && s.topMissed[0][1] >= 2) {
+        out.push(['&#128269;', `가장 자주 놓친 항목은 <b>'${escapeHtml(s.topMissed[0][0])}'</b> (${s.topMissed[0][1]}회). 마감시간을 앞당기거나 우선순위를 한 단계 올려보세요.`]);
+      }
+
+      return out;
     }
 
-    function selectCalendarDay(dateStr) {
-      currentDate = new Date(dateStr + 'T00:00:00');
-      updateDateDisplay();
-      loadCalendar();
-    }
+    function renderStats(dates, days) {
+      const s = analyzeStats(dates, days);
+      const body = document.getElementById('statsBody');
 
-    function renderEvents(events) {
-      const container = document.getElementById('eventList');
-
-      if (events.length === 0) {
-        container.innerHTML = `
+      if (s.total === 0) {
+        body.innerHTML = `
           <div class="empty-state">
-            <div class="empty-icon">&#128197;</div>
-            <p>일정이 없습니다</p>
-            <p style="margin-top:4px;font-size:12px;">구글 캘린더 연동 시 일정이 표시됩니다</p>
-          </div>
-        `;
+            <div class="empty-icon">&#128202;</div>
+            <p>이 기간에 기록된 항목이 없어요</p>
+            <p style="margin-top:4px;font-size:12px;">체크리스트를 작성하면 통계가 쌓입니다</p>
+          </div>`;
         return;
       }
 
-      container.innerHTML = events.map(ev => {
-        const timeStr = ev.allDay ? '종일' : formatTime(ev.start) + ' - ' + formatTime(ev.end);
-        return `
-          <div class="event-card">
-            <div class="event-time">${timeStr}</div>
-            <div class="event-title">${escapeHtml(ev.title)}</div>
-            ${ev.location ? `<div class="event-location">&#128205; ${escapeHtml(ev.location)}</div>` : ''}
-          </div>
-        `;
-      }).join('');
-    }
+      // 1) 요약 카드
+      const rateClass = s.rate >= 70 ? 'good' : s.rate < 40 ? 'bad' : '';
+      let html = `
+        <div class="stat-cards">
+          <div class="stat-card"><div class="num ${rateClass}">${s.rate}%</div><div class="lbl">달성률</div></div>
+          <div class="stat-card"><div class="num good">${s.done}</div><div class="lbl">완료</div></div>
+          <div class="stat-card"><div class="num bad">${s.total - s.done}</div><div class="lbl">미완료</div></div>
+        </div>`;
 
-    function formatTime(isoStr) {
-      const d = new Date(isoStr);
-      const h = d.getHours();
-      const m = String(d.getMinutes()).padStart(2, '0');
-      const period = h < 12 ? '오전' : '오후';
-      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-      return `${period} ${h12}:${m}`;
+      // 2) 일별 추이
+      const isWeek = statsMode === 'week';
+      html += `
+        <div class="stats-section">
+          <h3>&#128200; 일별 달성 추이 <span class="sub-note">기록 ${s.activeDays}일 / 100%달성 ${s.perfectDays}일</span></h3>
+          <div class="day-chart">
+            ${s.daily.map(x => {
+              const pct = x.rate === null ? 0 : Math.max(x.rate * 100, 4);
+              const cls = x.t === 0 ? 'zero' : (x.d === x.t ? 'full' : '');
+              const d = new Date(x.date + 'T00:00:00');
+              const lbl = isWeek ? s.dowNames[d.getDay()] : (d.getDate() % 5 === 0 || d.getDate() === 1 ? d.getDate() : '');
+              return `<div class="day-col ${x.isToday ? 'today-col' : ''}">
+                        <div class="day-bar ${cls}" style="height:${x.t === 0 ? 2 : pct}%" title="${x.date}: ${x.d}/${x.t}"></div>
+                        <div class="day-lbl">${lbl}</div>
+                      </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+
+      // 3) 우선순위별
+      const prioRows = [['A', 'A급 (중요)'], ['B', 'B급'], ['C', 'C급'], ['N', '미지정']]
+        .filter(([k]) => s.byPrio[k].t > 0)
+        .map(([k, name]) => {
+          const p = s.byPrio[k];
+          const r = Math.round(p.d / p.t * 100);
+          return `<div class="bar-row">
+                    <span class="bar-name"><span class="prio-tag ${k}">${k === 'N' ? '-' : k}</span></span>
+                    <div class="bar-track"><div class="bar-fill" style="width:${r}%"></div></div>
+                    <span class="bar-val">${p.d}/${p.t} (${r}%)</span>
+                  </div>`;
+        }).join('');
+      html += `
+        <div class="stats-section">
+          <h3>&#127919; 우선순위별 분석</h3>
+          ${prioRows}
+        </div>`;
+
+      // 4) 업무 거래처 (병원/약국)
+      if (s.workItems.length > 0) {
+        const wRate = Math.round(s.workDone / s.workItems.length * 100);
+        html += `
+          <div class="stats-section">
+            <h3>&#127973; 업무 거래처 활동 <span class="sub-note">${s.workDone}/${s.workItems.length}건 완료 (${wRate}%)</span></h3>
+            ${s.topPlaces.map(([name, v], i) => `
+              <div class="rank-item">
+                <span class="rank-no">${i + 1}</span>
+                <span class="rank-name">${escapeHtml(name)}</span>
+                <span class="rank-cnt"><b>${v.d}</b>/${v.t}회</span>
+              </div>`).join('')}
+          </div>`;
+      }
+
+      // 5) 자주 놓친 항목
+      if (s.topMissed.length > 0) {
+        html += `
+          <div class="stats-section">
+            <h3>&#128683; 자주 놓친 항목</h3>
+            ${s.topMissed.map(([name, cnt], i) => `
+              <div class="rank-item">
+                <span class="rank-no">${i + 1}</span>
+                <span class="rank-name">${escapeHtml(name)}</span>
+                <span class="rank-cnt"><b>${cnt}</b>회 미완료</span>
+              </div>`).join('')}
+          </div>`;
+      }
+
+      // 6) 많이 완료한 항목
+      if (s.topDone.length > 0) {
+        html += `
+          <div class="stats-section">
+            <h3>&#9989; 꾸준히 완료한 항목</h3>
+            ${s.topDone.map(([name, cnt], i) => `
+              <div class="rank-item">
+                <span class="rank-no">${i + 1}</span>
+                <span class="rank-name">${escapeHtml(name)}</span>
+                <span class="rank-cnt"><b>${cnt}</b>회 완료</span>
+              </div>`).join('')}
+          </div>`;
+      }
+
+      // 7) 생활 영역 분석
+      if (s.catList.length > 0) {
+        html += `
+          <div class="stats-section">
+            <h3>&#129517; 생활 영역 분석 <span class="sub-note">항목명 기반 자동 분류</span></h3>
+            ${s.catList.map(([name, v]) => {
+              const r = Math.round(v.d / v.t * 100);
+              return `<div class="bar-row">
+                        <span class="bar-name">${escapeHtml(name)}</span>
+                        <div class="bar-track"><div class="bar-fill" style="width:${r}%"></div></div>
+                        <span class="bar-val">${v.d}/${v.t} (${r}%)</span>
+                      </div>`;
+            }).join('')}
+          </div>`;
+      }
+
+      // 8) 인사이트
+      const insights = buildInsights(s);
+      if (insights.length > 0) {
+        html += `
+          <div class="stats-section">
+            <h3>&#128172; 새록 인사이트</h3>
+            ${insights.map(([ico, msg]) => `
+              <div class="insight-item"><span class="ico">${ico}</span><span>${msg}</span></div>`).join('')}
+          </div>`;
+      }
+
+      body.innerHTML = html;
     }
 
     // ==========================================

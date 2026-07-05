@@ -1,5 +1,9 @@
 // ============================================
-// Google Apps Script - 일일 체크리스트 & 캘린더 API
+// Google Apps Script - 일일 체크리스트 API v3 (통계 지원)
+// ============================================
+// v3 변경: getChecklistRange(기간 조회, 통계용) 추가 / 구글 캘린더 연동 제거
+// 업데이트 방법: script.google.com에서 기존 프로젝트 코드 전체 교체 후
+//   배포 → 배포 관리 → 연필 아이콘 → 버전 "새 버전" → 배포 (URL 유지됨)
 // ============================================
 // 이 코드를 구글 시트의 Apps Script 편집기에 붙여넣으세요.
 //
@@ -61,8 +65,8 @@ function doGet(e) {
       case 'getChecklist':
         result = getChecklist(e.parameter.date);
         break;
-      case 'getCalendar':
-        result = getCalendar(e.parameter.date);
+      case 'getChecklistRange':
+        result = getChecklistRange(e.parameter.start, e.parameter.end);
         break;
       case 'getMonthlyPlan':
         result = getMonthlyPlan(e.parameter.yearMonth);
@@ -152,6 +156,41 @@ function getChecklist(dateStr) {
     });
 
   return { date: dateStr, items: items };
+}
+
+/**
+ * 기간 체크리스트 가져오기 (통계용) — start~end 날짜의 모든 항목을 날짜별로 묶어 반환
+ */
+function getChecklistRange(startStr, endStr) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(CHECKLIST_SHEET);
+
+  if (!sheet || sheet.getLastRow() < 2) {
+    return { start: startStr, end: endStr, days: {} };
+  }
+
+  const lastCol = Math.max(sheet.getLastColumn(), 8);
+  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, lastCol).getValues();
+  const days = {};
+
+  data.forEach(row => {
+    if (!row[0]) return;
+    const rowDate = Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    if (rowDate < startStr || rowDate > endStr) return;
+
+    if (!days[rowDate]) days[rowDate] = [];
+    days[rowDate].push({
+      name: row[1],
+      done: row[2] === true || row[2] === 'TRUE',
+      type: row[3] || '추가',
+      order: row[4],
+      id: row[5],
+      deadline: row[6] ? (row[6] instanceof Date ? Utilities.formatDate(row[6], Session.getScriptTimeZone(), 'HH:mm') : String(row[6])) : null,
+      priority: row[7] || null
+    });
+  });
+
+  return { start: startStr, end: endStr, days: days };
 }
 
 /**
@@ -270,54 +309,4 @@ function saveMonthlyPlan(yearMonth, items) {
   return { success: true, yearMonth: yearMonth, count: items.length };
 }
 
-/**
- * 구글 캘린더 일정 가져오기
- */
-function getCalendar(dateStr) {
-  const date = new Date(dateStr);
-  const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
-  const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
-
-  const calendar = CalendarApp.getDefaultCalendar();
-  const events = calendar.getEvents(startOfDay, endOfDay);
-
-  const eventList = events.map(event => ({
-    title: event.getTitle(),
-    start: event.getStartTime().toISOString(),
-    end: event.getEndTime().toISOString(),
-    allDay: event.isAllDayEvent(),
-    location: event.getLocation() || '',
-    description: event.getDescription() || ''
-  }));
-
-  // 주간 일정도 함께 가져오기
-  const dayOfWeek = date.getDay();
-  const monday = new Date(date);
-  monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59);
-  monday.setHours(0, 0, 0);
-
-  const weekEvents = calendar.getEvents(monday, sunday);
-  const weekData = {};
-
-  weekEvents.forEach(event => {
-    const eventDate = Utilities.formatDate(event.getStartTime(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-    if (!weekData[eventDate]) {
-      weekData[eventDate] = [];
-    }
-    weekData[eventDate].push({
-      title: event.getTitle(),
-      start: event.getStartTime().toISOString(),
-      end: event.getEndTime().toISOString(),
-      allDay: event.isAllDayEvent()
-    });
-  });
-
-  return {
-    date: dateStr,
-    events: eventList,
-    weekEvents: weekData
-  };
-}
+// (구글 캘린더 연동은 v3에서 제거됨 — 통계 분석으로 대체)
