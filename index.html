@@ -1103,7 +1103,7 @@
 
     <!-- App Info -->
     <div class="settings-section" style="text-align:center;">
-      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v3.0 (통계 분석)</p>
+      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v3.1 (통계 분석 + 중복 방지)</p>
       <p style="font-size:12px;color:var(--text-light);margin-top:4px;">PWA - 오프라인 지원</p>
     </div>
   </div>
@@ -1259,6 +1259,33 @@
       return await apiGet(data.action, data);
     }
 
+    // ID 기준 중복 제거 (서버 경합으로 두 벌 저장된 항목 방어, 뒤쪽 = 최신이 이김)
+    function dedupeById(items) {
+      const map = {};
+      const order = [];
+      (items || []).forEach(it => {
+        const key = it.id || (it.name + '|' + (it.deadline || ''));
+        if (!(key in map)) order.push(key);
+        map[key] = it;
+      });
+      return order.map(k => map[k]);
+    }
+
+    // 저장 요청 직렬화: 같은 키(날짜/연월)의 저장이 진행 중이면 완료 후 최신본 1회만 재전송
+    const saveQueues = {};
+    function enqueueSave(key, sendLatest) {
+      const q = saveQueues[key] || (saveQueues[key] = { busy: false, pending: false });
+      if (q.busy) { q.pending = true; return; }
+      q.busy = true;
+      (async () => {
+        do {
+          q.pending = false;
+          await sendLatest();
+        } while (q.pending);
+        q.busy = false;
+      })();
+    }
+
     function showLoading(show) {
       document.getElementById('loading').classList.toggle('active', show);
     }
@@ -1272,7 +1299,7 @@
       if (getApiUrl()) {
         const data = await apiGet('getMonthlyPlan', { yearMonth: ym });
         if (data && !data.error) {
-          const remoteItems = data.items || [];
+          const remoteItems = dedupeById(data.items || []);
           const localRaw = localStorage.getItem(MONTHLY_PLAN_PREFIX + ym);
           const localItems = localRaw ? JSON.parse(localRaw) : [];
           // 원격 데이터가 있으면 사용, 없으면 로컬 유지
@@ -1296,9 +1323,13 @@
       const ym = getYearMonth();
       localStorage.setItem(MONTHLY_PLAN_PREFIX + ym, JSON.stringify(monthlyPlanItems));
 
-      if (getApiUrl()) {
-        apiPost({ action: 'saveMonthlyPlan', yearMonth: ym, items: monthlyPlanItems });
-      }
+      if (!getApiUrl()) return;
+
+      enqueueSave('mp_' + ym, async () => {
+        const raw = localStorage.getItem(MONTHLY_PLAN_PREFIX + ym);
+        const items = raw ? JSON.parse(raw) : [];
+        await apiPost({ action: 'saveMonthlyPlan', yearMonth: ym, items: items });
+      });
     }
 
     function toggleMonthlySection() {
@@ -1383,7 +1414,7 @@
         showLoading(false);
 
         if (data && !data.error) {
-          const remoteItems = data.items || [];
+          const remoteItems = dedupeById(data.items || []);
           const localItems = loadLocalChecklist(dateStr) || [];
           // 원격 데이터가 있으면 사용, 없으면 로컬 유지
           if (remoteItems.length > 0 || localItems.length === 0) {
@@ -1536,14 +1567,14 @@
       const dateStr = formatDate(currentDate);
       saveLocalChecklist(dateStr, checklistItems);
 
-      if (getApiUrl()) {
-        const result = await apiPost({
-          action: 'saveChecklist',
-          date: dateStr,
-          items: checklistItems
-        });
+      if (!getApiUrl()) return;
+
+      // 연타 시 동시 전송 → 서버에서 중복 저장되는 경합 방지: 날짜별로 직렬화
+      enqueueSave('cl_' + dateStr, async () => {
+        const items = loadLocalChecklist(dateStr) || []; // 전송 시점의 최신본
+        const result = await apiPost({ action: 'saveChecklist', date: dateStr, items: items });
         if (!result) showToast('⚠️ 서버 저장 실패 (로컬에는 저장됨)');
-      }
+      });
     }
 
     function saveLocalChecklist(dateStr, items) {
@@ -1627,14 +1658,17 @@
       const days = {};
       if (getApiUrl()) {
         const data = await apiGet('getChecklistRange', { start: dates[0], end: dates[dates.length - 1] });
-        if (data && !data.error && data.days) return data.days;
+        if (data && !data.error && data.days) {
+          Object.keys(data.days).forEach(d => { data.days[d] = dedupeById(data.days[d]); });
+          return data.days;
+        }
 
         // Apps Script가 구버전이면 날짜별 개별 조회로 폴백
         const results = await Promise.all(dates.map(d => apiGet('getChecklist', { date: d })));
         dates.forEach((d, i) => {
           const r = results[i];
           if (r && !r.error && r.items && r.items.length > 0) {
-            days[d] = r.items;
+            days[d] = dedupeById(r.items);
           } else {
             const loc = loadLocalChecklist(d);
             if (loc && loc.length > 0) days[d] = loc;

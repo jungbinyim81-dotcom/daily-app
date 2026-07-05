@@ -54,6 +54,52 @@ function generateId() {
 }
 
 /**
+ * ID 기준 중복 제거 (같은 ID면 뒤에 있는 행 = 최신이 이김)
+ */
+function dedupeById(items) {
+  const map = {};
+  const order = [];
+  items.forEach(it => {
+    const key = it.id || (it.name + '|' + (it.deadline || ''));
+    if (!(key in map)) order.push(key);
+    map[key] = it;
+  });
+  return order.map(k => map[k]);
+}
+
+/**
+ * 시트에 이미 쌓인 중복 행 일괄 청소 (Apps Script 편집기에서 수동 1회 실행)
+ * 같은 (날짜, ID) 조합이 여러 행이면 마지막 행만 남김
+ */
+function cleanupDuplicates() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(CHECKLIST_SHEET);
+  if (!sheet || sheet.getLastRow() < 2) return;
+
+  const lastCol = Math.max(sheet.getLastColumn(), 8);
+  const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, lastCol).getValues();
+  const seen = {};
+  const rowsToDelete = [];
+
+  // 아래쪽(최신)부터 훑어서 처음 본 (날짜,ID)만 남기고 위쪽 중복은 삭제 대상
+  for (let i = data.length - 1; i >= 0; i--) {
+    if (!data[i][0]) continue;
+    const rowDate = Utilities.formatDate(new Date(data[i][0]), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    const key = rowDate + '|' + (data[i][5] || (data[i][1] + '|' + data[i][6]));
+    if (seen[key]) {
+      rowsToDelete.push(i + 2);
+    } else {
+      seen[key] = true;
+    }
+  }
+
+  // 행 번호 큰 것부터 삭제 (인덱스 밀림 방지)
+  rowsToDelete.sort((a, b) => b - a);
+  rowsToDelete.forEach(r => sheet.deleteRow(r));
+  Logger.log('중복 ' + rowsToDelete.length + '행 삭제 완료');
+}
+
+/**
  * GET 요청 처리
  */
 function doGet(e) {
@@ -146,7 +192,9 @@ function getChecklist(dateStr) {
       id: row[5],
       deadline: row[6] ? (row[6] instanceof Date ? Utilities.formatDate(row[6], Session.getScriptTimeZone(), 'HH:mm') : String(row[6])) : null,
       priority: row[7] || null
-    }))
+    }));
+
+  const sorted = dedupeById(items)
     .sort((a, b) => {
       const pOrder = { A: 1, B: 2, C: 3 };
       const pa = pOrder[a.priority] || 4;
@@ -155,7 +203,7 @@ function getChecklist(dateStr) {
       return (a.order || 0) - (b.order || 0);
     });
 
-  return { date: dateStr, items: items };
+  return { date: dateStr, items: sorted };
 }
 
 /**
@@ -190,6 +238,9 @@ function getChecklistRange(startStr, endStr) {
     });
   });
 
+  // 날짜별 중복 제거
+  Object.keys(days).forEach(d => { days[d] = dedupeById(days[d]); });
+
   return { start: startStr, end: endStr, days: days };
 }
 
@@ -197,6 +248,17 @@ function getChecklistRange(startStr, endStr) {
  * 체크리스트 저장 (해당 날짜 전체 덮어쓰기, 8열)
  */
 function saveChecklist(dateStr, items) {
+  // 동시 저장 경합 방지 (연타 시 같은 날짜가 두 벌 저장되는 버그의 원인)
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    return saveChecklistLocked(dateStr, items);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function saveChecklistLocked(dateStr, items) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(CHECKLIST_SHEET);
 
@@ -270,6 +332,16 @@ function getMonthlyPlan(yearMonth) {
  * 월 계획 저장 (해당 연월 전체 덮어쓰기)
  */
 function saveMonthlyPlan(yearMonth, items) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    return saveMonthlyPlanLocked(yearMonth, items);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function saveMonthlyPlanLocked(yearMonth, items) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(MONTHLY_PLAN_SHEET);
 
