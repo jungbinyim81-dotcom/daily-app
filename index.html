@@ -1435,10 +1435,23 @@
 
     function renderChecklist() {
       const priorityOrder = { A: 1, B: 2, C: 3 };
+      // 마감시간을 분 단위 숫자로 변환 (없으면 맨 뒤로)
+      const deadlineMinutes = (item) => {
+        if (!item.deadline) return Infinity;
+        const [h, m] = String(item.deadline).split(':').map(Number);
+        if (isNaN(h)) return Infinity;
+        return h * 60 + (m || 0);
+      };
       const sorted = [...checklistItems].sort((a, b) => {
+        // 1순위: 마감시간 오름차순 (시간 있는 항목이 위, 시간순 정렬)
+        const da = deadlineMinutes(a);
+        const db = deadlineMinutes(b);
+        if (da !== db) return da - db;
+        // 2순위: 우선순위 A > B > C
         const pa = priorityOrder[a.priority] || 4;
         const pb = priorityOrder[b.priority] || 4;
         if (pa !== pb) return pa - pb;
+        // 3순위: 입력 순서
         return (a.order || 0) - (b.order || 0);
       });
 
