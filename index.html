@@ -976,6 +976,245 @@
       font-size: 14px;
     }
 
+    /* ===== v4 통계: 요약 델타 ===== */
+    .stat-card .delta {
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .stat-card .delta.up { color: var(--success); }
+    .stat-card .delta.down { color: var(--danger); }
+    .stat-card .delta.flat { color: var(--text-light); }
+
+    /* ===== 기록 히트맵 ===== */
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .heat-head {
+      font-size: 10px;
+      color: var(--text-light);
+      text-align: center;
+      font-weight: 700;
+      padding-bottom: 2px;
+    }
+
+    .heat-cell {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      background: var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-light);
+      cursor: pointer;
+      border: 2px solid transparent;
+      overflow: hidden;
+    }
+
+    .heat-cell.empty-day { background: transparent; cursor: default; }
+    .heat-cell.no-record { background: var(--bg); border: 1px dashed var(--border); }
+    .heat-cell.lv1 { background: #D5F0E3; color: #1F7A4D; }
+    .heat-cell.lv2 { background: #9FE0BE; color: #14603A; }
+    .heat-cell.lv3 { background: #58C98F; color: #0C4527; }
+    .heat-cell.lv4 { background: var(--success); color: #fff; }
+    .heat-cell.future { opacity: 0.4; }
+    .heat-cell.today-cell { border-color: var(--primary); }
+    .heat-cell .hc-day { font-size: 11px; line-height: 1.1; }
+    .heat-cell .hc-sub { font-size: 9px; opacity: 0.85; line-height: 1.1; }
+
+    .heat-legend {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-light);
+    }
+
+    .heat-legend .box {
+      width: 12px; height: 12px; border-radius: 3px; display: inline-block;
+    }
+
+    .streak-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .streak-box {
+      flex: 1;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .streak-box .sv { font-size: 16px; font-weight: 800; color: var(--primary); }
+    .streak-box .sl { font-size: 10px; color: var(--text-light); font-weight: 600; margin-top: 2px; }
+
+    /* ===== 실행 레버 ===== */
+    .lever {
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .lever:last-child { border-bottom: none; }
+
+    .lever-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .lever-name { font-size: 13px; font-weight: 700; }
+
+    .lever-delta {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .lever-delta.up { background: rgba(46,204,113,0.15); color: var(--success); }
+    .lever-delta.down { background: rgba(231,76,60,0.12); color: var(--danger); }
+
+    .lever-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .lever-bar .lb-lbl {
+      font-size: 11px;
+      color: var(--text-light);
+      width: 78px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .lever-bar .lb-track {
+      flex: 1;
+      height: 10px;
+      background: var(--bg);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .lever-bar .lb-fill { height: 100%; background: var(--border); border-radius: 5px; }
+    .lever-bar .lb-fill.on { background: var(--success); }
+    .lever-bar .lb-val { font-size: 11px; font-weight: 700; width: 34px; text-align: right; }
+
+    .lever-note { font-size: 11px; color: var(--text-light); margin-top: 6px; }
+
+    /* ===== 밀린 약속 ===== */
+    .stalled-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .stalled-item:last-child { border-bottom: none; }
+
+    .stalled-item .st-body { flex: 1; min-width: 0; }
+    .stalled-item .st-name { font-size: 13px; font-weight: 600; }
+    .stalled-item .st-meta { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .stalled-item .st-days { color: var(--danger); font-weight: 700; }
+
+    .pull-btn {
+      flex-shrink: 0;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .pull-btn:active { background: var(--primary-dark); }
+
+    /* ===== 새록 복기 ===== */
+    .review-section {
+      background: linear-gradient(160deg, #2C3E50 0%, #1A2530 100%);
+      color: #ECF0F1;
+    }
+    .review-section h3 { color: #fff; }
+    .review-section .sub-note { color: rgba(255,255,255,0.55); }
+
+    .review-line {
+      display: flex;
+      gap: 8px;
+      padding: 7px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .review-line:last-child { border-bottom: none; }
+    .review-line b { color: #FFD479; }
+    .review-line .ico { flex-shrink: 0; }
+
+    .review-sub {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      color: rgba(255,255,255,0.5);
+      margin: 14px 0 4px;
+    }
+
+    .rx-item {
+      display: flex;
+      gap: 8px;
+      padding: 7px 0;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .rx-no {
+      flex-shrink: 0;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #FFD479;
+      color: #1A2530;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+
+    .review-quote {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-left: 3px solid #FFD479;
+      background: rgba(255,255,255,0.05);
+      font-size: 12.5px;
+      line-height: 1.6;
+      font-style: italic;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .copy-review-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .copy-review-btn:active { background: rgba(255,255,255,0.18); }
+
     /* Settings Tab */
     .settings-section {
       background: var(--card);
@@ -1190,7 +1429,7 @@
 
     <!-- App Info -->
     <div class="settings-section" style="text-align:center;">
-      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v3.3 (시간 자동인식 + 항목 수정)</p>
+      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v4.0 (실행 레버 분석 + 새록 복기)</p>
       <p style="font-size:12px;color:var(--text-light);margin-top:4px;">PWA - 오프라인 지원</p>
     </div>
   </div>
@@ -1226,6 +1465,9 @@
     let editPriority = null;         // 수정 모드에서 선택된 우선순위
     let statsMode = 'week';          // 'week' | 'month'
     let statsAnchor = new Date();    // 통계 기간 기준일
+    let statsLong = null;            // 최근 90일 데이터 캐시 (레버/밀린약속/스트릭용)
+    let stalledCache = [];           // 밀린 약속 목록 (버튼에서 인덱스로 참조)
+    let reviewTextCache = '';        // 복기 텍스트 (복사용)
 
     const API_URL_KEY = 'daily_app_api_url';
     const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbz5oYnYCxLW_8sYMumq8_9JUKufIKeCOmKNgFII8RMuX3WOCYoNTh07-U4UeT8bwfoo-g/exec';
@@ -1981,15 +2223,209 @@
       return days;
     }
 
+    // ------------------------------------------
+    // 장기(최근 90일) 데이터 — 실행 레버/밀린 약속/스트릭/이전 기간 비교용
+    // ------------------------------------------
+    const LONG_DAYS = 90;
+
+    function longRangeDates() {
+      const list = [];
+      const today = new Date();
+      for (let i = LONG_DAYS - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        list.push(formatDate(d));
+      }
+      return list;
+    }
+
+    async function fetchLongRange() {
+      const dates = longRangeDates();
+      const key = dates[0] + '_' + dates[dates.length - 1];
+      if (statsLong && statsLong.key === key) return statsLong.days;
+
+      let days = {};
+      if (getApiUrl()) {
+        const data = await apiGet('getChecklistRange', { start: dates[0], end: dates[dates.length - 1] });
+        if (data && !data.error && data.days) {
+          Object.keys(data.days).forEach(d => { data.days[d] = normalizeItems(dedupeById(data.days[d])); });
+          days = data.days;
+        }
+      }
+      // range API가 안 되면 로컬 데이터만 사용 (90회 개별 조회는 하지 않음)
+      if (Object.keys(days).length === 0) {
+        dates.forEach(d => {
+          const loc = loadLocalChecklist(d);
+          if (loc && loc.length > 0) days[d] = normalizeItems(loc);
+        });
+      }
+      statsLong = { key, days, dates };
+      return days;
+    }
+
+    // 완료율 계산 헬퍼
+    const rateOf = (b) => b.t > 0 ? Math.round(b.d / b.t * 100) : 0;
+    const bump = (b, done) => { b.t++; if (done) b.d++; };
+
+    // 실행 레버: "무엇이 내 완료율을 바꾸는가" (최근 90일 기준)
+    function analyzeLevers(days90) {
+      const todayStr = formatDate(new Date());
+      const flat = [];
+      Object.keys(days90).forEach(d => {
+        if (d > todayStr) return;                       // 미래는 제외
+        (days90[d] || []).forEach(it => flat.push({ ...it, date: d }));
+      });
+      if (flat.length < 10) return { levers: [], n: flat.length };
+
+      const withTime = { t: 0, d: 0 }, noTime = { t: 0, d: 0 };
+      const withPrio = { t: 0, d: 0 }, noPrio = { t: 0, d: 0 };
+      flat.forEach(i => {
+        bump(normalizeTime(i.deadline) ? withTime : noTime, i.done);
+        bump(i.priority ? withPrio : noPrio, i.done);
+      });
+
+      // 하루 항목 수 구간별
+      const sizeBuckets = { '1~3개': { t: 0, d: 0 }, '4~6개': { t: 0, d: 0 }, '7~9개': { t: 0, d: 0 }, '10개+': { t: 0, d: 0 } };
+      // 요일별
+      const dowNames = ['일', '월', '화', '수', '목', '금', '토'];
+      const dowB = {};
+      Object.keys(days90).forEach(d => {
+        if (d > todayStr) return;
+        const items = days90[d] || [];
+        if (!items.length) return;
+        const key = items.length <= 3 ? '1~3개' : items.length <= 6 ? '4~6개' : items.length <= 9 ? '7~9개' : '10개+';
+        const dw = new Date(d + 'T00:00:00').getDay();
+        if (!dowB[dw]) dowB[dw] = { t: 0, d: 0, days: 0 };
+        dowB[dw].days++;
+        items.forEach(i => { bump(sizeBuckets[key], i.done); bump(dowB[dw], i.done); });
+      });
+
+      const levers = [];
+      const push = (name, on, onLbl, off, offLbl, note) => {
+        if (on.t < 5 || off.t < 5) return;
+        levers.push({ name, onRate: rateOf(on), onLbl, on, offRate: rateOf(off), offLbl, off,
+                      delta: rateOf(on) - rateOf(off), note });
+      };
+
+      push('시간을 적으면', withTime, '시간 있음', noTime, '시간 없음',
+           `시간 지정 비율 ${Math.round(withTime.t / flat.length * 100)}%`);
+      push('등급을 매기면', withPrio, '등급 있음', noPrio, '등급 없음',
+           `등급 지정 비율 ${Math.round(withPrio.t / flat.length * 100)}%`);
+
+      // 하루 계획 분량: 가장 높은 구간 vs 가장 낮은 구간 (구간당 10개 이상일 때만)
+      const sizeList = Object.entries(sizeBuckets).filter(([, v]) => v.t >= 10);
+      if (sizeList.length >= 2) {
+        const sorted = [...sizeList].sort((a, b) => rateOf(b[1]) - rateOf(a[1]));
+        const best = sorted[0], worst = sorted[sorted.length - 1];
+        levers.push({ name: '하루 계획 분량', onRate: rateOf(best[1]), onLbl: best[0], on: best[1],
+                      offRate: rateOf(worst[1]), offLbl: worst[0], off: worst[1],
+                      delta: rateOf(best[1]) - rateOf(worst[1]),
+                      note: `${worst[0]} 적은 날이 가장 낮음 — 계획을 줄인 날이 오히려 무너집니다`,
+                      bestSize: best[0], worstSize: worst[0] });
+      }
+
+      // 요일: 최고 vs 최저 (요일당 항목 15개 & 3일 이상 기록됐을 때만 — 표본 부족 착시 방지)
+      const dowList = Object.entries(dowB).filter(([, v]) => v.t >= 15 && v.days >= 3);
+      if (dowList.length >= 3) {
+        const sorted = [...dowList].sort((a, b) => rateOf(b[1]) - rateOf(a[1]));
+        const best = sorted[0], worst = sorted[sorted.length - 1];
+        levers.push({ name: '요일에 따라', onRate: rateOf(best[1]), onLbl: dowNames[best[0]] + '요일', on: best[1],
+                      offRate: rateOf(worst[1]), offLbl: dowNames[worst[0]] + '요일', off: worst[1],
+                      delta: rateOf(best[1]) - rateOf(worst[1]),
+                      note: `${dowNames[worst[0]]}요일이 가장 약함 (기록 ${worst[1].days}일)`,
+                      worstDow: dowNames[worst[0]], worstRate: rateOf(worst[1]),
+                      bestDow: dowNames[best[0]] });
+      }
+
+      levers.sort((a, b) => b.delta - a.delta);
+      return { levers: levers.filter(l => l.delta >= 5), n: flat.length,
+               withTime, noTime, withPrio, noPrio, sizeBuckets, dowB, dowNames };
+    }
+
+    // 밀린 약속: 여러 날 올렸지만 끝내 못 끝낸 항목
+    function findStalled(days90) {
+      const todayStr = formatDate(new Date());
+      const map = {};
+      Object.keys(days90).sort().forEach(d => {
+        if (d > todayStr) return;
+        (days90[d] || []).forEach(it => {
+          const name = String(it.name || '').trim();
+          if (!name) return;
+          if (!map[name]) map[name] = { name, first: d, last: d, tries: 0, misses: 0, lastDone: false };
+          const m = map[name];
+          m.last = d;
+          m.tries++;
+          if (it.done) m.lastDone = true; else { m.misses++; m.lastDone = false; }
+        });
+      });
+
+      const today = new Date(todayStr + 'T00:00:00');
+      const daysBetween = (a, b) => Math.round((b - new Date(a + 'T00:00:00')) / 86400000);
+
+      return Object.values(map)
+        .filter(m => !m.lastDone && m.misses >= 2 && m.last < todayStr)
+        .map(m => ({ ...m, ageDays: daysBetween(m.first, today), sinceDays: daysBetween(m.last, today) }))
+        // 많이 미룬 것 우선, 같으면 최근에 시도한 것 먼저 (아직 살아있는 약속)
+        .sort((a, b) => (b.misses - a.misses) || (a.sinceDays - b.sinceDays))
+        .slice(0, 6);
+    }
+
+    // 기록 스트릭 (연속으로 체크리스트를 쓴 날)
+    function computeStreak(days90) {
+      const has = (d) => (days90[d] || []).length > 0;
+      const today = new Date();
+
+      let current = 0;
+      for (let i = 0; i < LONG_DAYS; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const k = formatDate(d);
+        if (has(k)) current++;
+        else if (i === 0) continue;   // 오늘은 아직 안 썼을 수 있음
+        else break;
+      }
+
+      const keys = Object.keys(days90).filter(has).sort();
+      let best = 0, run = 0, prev = null;
+      keys.forEach(k => {
+        const dt = new Date(k + 'T00:00:00');
+        run = (prev && Math.round((dt - prev) / 86400000) === 1) ? run + 1 : 1;
+        if (run > best) best = run;
+        prev = dt;
+      });
+
+      const recorded = keys.length;
+      return { current, best, recorded, rate: Math.round(recorded / LONG_DAYS * 100) };
+    }
+
+    // 이전 기간 달성률 (90일 캐시 안에 있을 때만)
+    function prevPeriodRate(dates, days90) {
+      const len = dates.length;
+      const first = new Date(dates[0] + 'T00:00:00');
+      const prevDates = [];
+      for (let i = len; i >= 1; i--) {
+        const d = new Date(first);
+        d.setDate(first.getDate() - i);
+        prevDates.push(formatDate(d));
+      }
+      const covered = statsLong && statsLong.dates && prevDates.every(d => statsLong.dates.includes(d));
+      if (!covered) return null;
+
+      let t = 0, dn = 0;
+      prevDates.forEach(d => (days90[d] || []).forEach(i => { t++; if (i.done) dn++; }));
+      if (t === 0) return null;
+      return Math.round(dn / t * 100);
+    }
+
     async function loadStats() {
       const { dates, label } = getStatsRange();
       document.getElementById('statsPeriodLabel').textContent = label;
 
       showLoading(true);
-      const days = await fetchRangeItems(dates);
+      const [days, days90] = await Promise.all([fetchRangeItems(dates), fetchLongRange()]);
       showLoading(false);
 
-      renderStats(dates, days);
+      renderStats(dates, days, days90);
     }
 
     function analyzeStats(dates, days) {
@@ -2081,124 +2517,379 @@
                catList, dowMap, dowNames, deadlineHours };
     }
 
-    function buildInsights(s) {
+    // ------------------------------------------
+    // 새록 복기: 진단(숫자) + 이번 기간 처방 3개 + 한 문장
+    // ------------------------------------------
+    const REVIEW_QUOTES = [
+      { min: 80, t: '"탁월함은 습관이다." — 아리스토텔레스. 지금 수준을 기준선으로 굳혀라. 잘한 날을 표준으로 만들지 못하면 그저 운 좋은 한 주로 끝난다.' },
+      { min: 60, t: '"통제할 수 있는 것과 없는 것을 구분하라." — 에픽테토스. 거래처의 응답은 통제 밖이지만, 시간을 적고 등급을 매기는 건 100% 네 손 안이다.' },
+      { min: 40, t: '"인간은 극복되어야 할 무엇이다." — 니체. 절반의 실행은 절반의 자신이다. 나머지 절반은 의지가 아니라 설계로 채운다.' },
+      { min: 0,  t: '"의지는 늘 자기를 속인다." — 쇼펜하우어. 마음을 다잡는 대신 조건을 바꿔라. 시간과 등급을 적는 30초가 하루를 바꾼다.' }
+    ];
+
+    function pickQuote(rate) {
+      return (REVIEW_QUOTES.find(q => rate >= q.min) || REVIEW_QUOTES[REVIEW_QUOTES.length - 1]).t;
+    }
+
+    // 받침 여부에 따른 조사 선택 (['은','는'] / ['이','가'] / ['을','를'])
+    function josa(word, pair) {
+      const ch = String(word).trim().slice(-1);
+      const code = ch.charCodeAt(0);
+      if (code >= 0xAC00 && code <= 0xD7A3) {
+        return ((code - 0xAC00) % 28) !== 0 ? pair[0] : pair[1];
+      }
+      return pair[1];
+    }
+
+    // 진단 문장 (전부 실제 수치에 연결)
+    function buildDiagnosis(s, lev, stalled, streak, prevRate) {
       const out = [];
-      if (s.total === 0) return out;
+      const periodName = statsMode === 'week' ? '이번 주' : '이번 달';
 
-      // 1. 전체 달성률 평가
-      if (s.rate >= 80) {
-        out.push(['&#127942;', `달성률 <b>${s.rate}%</b> — 계획한 일을 거의 다 해내고 있어요. 최상위권 실행력입니다.`]);
-      } else if (s.rate >= 60) {
-        out.push(['&#128170;', `달성률 <b>${s.rate}%</b> — 안정적으로 소화하고 있어요. 놓친 항목만 줄이면 완벽합니다.`]);
-      } else if (s.rate >= 40) {
-        out.push(['&#127793;', `달성률 <b>${s.rate}%</b> — 계획 대비 실행이 절반 수준이에요. 항목 수를 줄여 확실히 끝내는 전략도 좋아요.`]);
-      } else {
-        out.push(['&#128161;', `달성률 <b>${s.rate}%</b> — 계획이 실행보다 큰 시기예요. 하루 3개 이하 핵심 항목부터 다시 시작해보세요.`]);
+      // 0. 기간에 기록이 아예 없을 때
+      if (s.total === 0) {
+        out.push(['&#128465;&#65039;', `${periodName}엔 <b>기록이 하나도 없다</b>. 계획하지 않은 하루는 남의 계획대로 흘러간 하루다.`]);
+        if (streak.best > 0) {
+          out.push(['&#128293;', `최근 90일 기록률 <b>${streak.rate}%</b>, 최장 연속 <b>${streak.best}일</b>. 다시 시작하는 데 필요한 건 3줄이다.`]);
+        }
+        const top0 = lev.levers[0];
+        if (top0) out.push(['&#128295;', `참고로 <b>${top0.name}</b> 완료율이 ${top0.offRate}% → <b>${top0.onRate}%</b>로 갈린다. 다시 적을 때 이 조건부터 챙겨라.`]);
+        return out;
       }
 
-      // 2. 우선순위 스타일
-      const A = s.byPrio.A, prioSum = s.byPrio.A.t + s.byPrio.B.t + s.byPrio.C.t;
+      // 1. 달성률 + 직전 기간 대비
+      let deltaTxt = '';
+      if (prevRate !== null) {
+        const d = s.rate - prevRate;
+        deltaTxt = d > 0 ? ` 직전 기간 ${prevRate}%에서 <b>+${d}%p</b>. 방향은 맞다.`
+                 : d < 0 ? ` 직전 기간 ${prevRate}%에서 <b>${d}%p</b>. 내려가는 중이다.`
+                 : ` 직전 기간과 같은 ${prevRate}%. 정체다.`;
+      }
+      out.push(['&#128202;', `${periodName} 달성률 <b>${s.rate}%</b> (${s.done}/${s.total}).${deltaTxt}`]);
+
+      // 2. 기록 자체 — 안 쓴 날은 통계에 잡히지도 않는다
+      const past = s.daily.filter(x => !x.isFuture).length;
+      const missing = past - s.activeDays;
+      if (missing > 0) {
+        out.push(['&#128197;', `${periodName} 지난 ${past}일 중 <b>${missing}일은 기록조차 없다</b>. 측정하지 않은 날은 좋았는지 나빴는지도 말할 수 없다.`]);
+      } else if (past > 0) {
+        out.push(['&#128197;', `${periodName} 지난 ${past}일 <b>전부 기록</b>했다. 측정되는 삶은 이미 절반 이긴 것이다.`]);
+      }
+
+      // 3. 최대 레버 — 개인 데이터로 증명된 실행 조건
+      const top = lev.levers[0];
+      if (top) {
+        out.push(['&#128295;', `최근 90일 기준, <b>${top.name}</b> 완료율이 ${top.offLbl} ${top.offRate}% → ${top.onLbl} <b>${top.onRate}%</b>로 <b>+${top.delta}%p</b>. 의지가 아니라 조건의 문제다.`]);
+      }
+      const second = lev.levers[1];
+      if (second) {
+        out.push(['&#128200;', `두 번째 레버는 <b>${second.name}</b>: ${second.offLbl} ${second.offRate}% vs ${second.onLbl} <b>${second.onRate}%</b> (+${second.delta}%p).`]);
+      }
+
+      // 4. 약한 요일
+      const dowLever = lev.levers.find(l => l.worstDow);
+      if (dowLever) {
+        out.push(['&#9888;&#65039;', `가장 무너지는 요일은 <b>${dowLever.worstDow}요일</b> (완료율 ${dowLever.worstRate}%). 그날은 계획을 줄이고 반드시 끝낼 것만 남겨라.`]);
+      }
+
+      // 5. 밀린 약속
+      if (stalled.length > 0) {
+        const z = stalled[0];
+        out.push(['&#9203;', `<b>'${escapeHtml(z.name)}'</b>${josa(z.name, ['은', '는'])} ${z.misses}번 적고 ${z.ageDays}일째 못 끝냈다. 미루는 항목은 시간이 없는 게 아니라 결심이 없는 항목이다.`]);
+      }
+
+      // 6. A급 실행력
+      const A = s.byPrio.A;
       if (A.t >= 3) {
-        const aRate = Math.round(A.d / A.t * 100);
-        if (aRate >= s.rate + 10) {
-          out.push(['&#127919;', `A급 완료율 <b>${aRate}%</b> — 중요한 일부터 확실히 끝내는 스타일이에요. 우선순위 감각이 좋습니다.`]);
-        } else if (aRate <= s.rate - 15) {
-          out.push(['&#9888;&#65039;', `A급 완료율이 <b>${aRate}%</b>로 전체 평균보다 낮아요. 가장 중요한 일이 자주 밀리고 있으니 하루의 첫 일정으로 배치해보세요.`]);
-        }
-      }
-      if (prioSum === 0 && s.total >= 5) {
-        out.push(['&#128204;', `우선순위(A/B/C)를 지정한 항목이 없어요. A만이라도 표시하면 복기 정확도가 확 올라갑니다.`]);
+        const aRate = rateOf(A);
+        if (aRate >= s.rate + 10) out.push(['&#127919;', `A급 완료율 <b>${aRate}%</b> — 중요한 걸 먼저 끝낸다. 이 순서 감각은 유지하라.`]);
+        else if (aRate < s.rate) out.push(['&#128680;', `A급 완료율이 <b>${aRate}%</b>로 전체(${s.rate}%)보다 낮다. 가장 중요한 일이 가장 먼저 밀리고 있다.`]);
       }
 
-      // 3. 삶의 중심 카테고리
-      const topCat = s.catList.filter(c => c[0] !== '기타').sort((a, b) => b[1].d - a[1].d)[0];
-      if (topCat && topCat[1].d >= 3) {
-        const msgs = {
-          '업무': '완료한 일의 중심이 <b>업무</b>예요. 영업 루틴이 삶의 엔진으로 돌아가고 있습니다.',
-          '건강/운동': '완료한 일의 중심이 <b>건강/운동</b>이에요. 몸을 챙기는 사람이 결국 오래 이깁니다.',
-          '자기계발': '완료한 일의 중심이 <b>자기계발</b>이에요. 꾸준히 쌓이는 것들이 미래의 무기가 됩니다.',
-          '재테크': '완료한 일의 중심이 <b>재테크</b>예요. 돈이 일하게 만드는 습관을 만들고 있네요.',
-          '가족/생활': '완료한 일의 중심이 <b>가족/생활</b>이에요. 삶의 기반을 단단히 다지는 시기네요.'
-        };
-        out.push(['&#129517;', msgs[topCat[0]] || `완료한 일의 중심이 <b>${topCat[0]}</b>이에요.`]);
+      // 7. 완주일 / 스트릭
+      if (s.perfectDays > 0) {
+        out.push(['&#10024;', `완주한 날 <b>${s.perfectDays}일</b>. 그날의 항목 수와 구성이 네 최적 하루다 — 복제하면 된다.`]);
       }
-
-      // 4. 강한 요일
-      const dowEntries = Object.entries(s.dowMap).filter(([, v]) => v.t >= 2);
-      if (dowEntries.length >= 3) {
-        const best = dowEntries.sort((a, b) => (b[1].d / b[1].t) - (a[1].d / a[1].t))[0];
-        const bestRate = Math.round(best[1].d / best[1].t * 100);
-        if (bestRate >= 60) {
-          out.push(['&#128197;', `<b>${s.dowNames[best[0]]}요일</b>이 가장 강해요 (달성률 ${bestRate}%). 어려운 일은 이 요일에 배치해보세요.`]);
-        }
-      }
-
-      // 5. 시간대 패턴
-      if (s.deadlineHours.length >= 3) {
-        const avg = s.deadlineHours.reduce((a, b) => a + b, 0) / s.deadlineHours.length;
-        if (avg < 12) {
-          out.push(['&#127749;', `완료한 일의 마감이 주로 <b>오전</b>이에요. 아침에 승부를 보는 타입 — 오전 집중력을 계속 활용하세요.`]);
-        } else if (avg >= 15) {
-          out.push(['&#127769;', `완료한 일의 마감이 주로 <b>오후~저녁</b>이에요. 후반 몰입형이니 오전엔 가벼운 일, 오후에 핵심 일정을 두는 게 맞아요.`]);
-        }
-      }
-
-      // 6. 100% 달성일
-      if (s.perfectDays >= 2) {
-        out.push(['&#10024;', `이 기간 <b>100% 달성일이 ${s.perfectDays}일</b>! 완벽한 하루의 감각을 이미 알고 있어요. 그 날의 항목 수와 구성을 복제하세요.`]);
-      }
-
-      // 7. 자주 놓친 항목 처방
-      if (s.topMissed.length > 0 && s.topMissed[0][1] >= 2) {
-        out.push(['&#128269;', `가장 자주 놓친 항목은 <b>'${escapeHtml(s.topMissed[0][0])}'</b> (${s.topMissed[0][1]}회). 마감시간을 앞당기거나 우선순위를 한 단계 올려보세요.`]);
+      if (streak.best > 0) {
+        out.push(['&#128293;', `현재 연속 기록 <b>${streak.current}일</b> / 최장 <b>${streak.best}일</b> (최근 90일 기록률 ${streak.rate}%).`]);
       }
 
       return out;
     }
 
-    function renderStats(dates, days) {
+    // 처방: 이번 기간에 실제로 바꿀 행동 3개
+    function buildPrescriptions(s, lev, stalled, streak) {
+      const rx = [];
+
+      // 1) 최대 레버를 규칙으로
+      const timeLever = lev.levers.find(l => l.name === '시간을 적으면');
+      const prioLever = lev.levers.find(l => l.name === '등급을 매기면');
+      if (timeLever) {
+        const cur = lev.withTime ? Math.round(lev.withTime.t / (lev.withTime.t + lev.noTime.t) * 100) : 0;
+        rx.push(`매일 항목에 <b>마감시간을 적는다</b>. 지금 시간 지정 비율은 ${cur}% — 이걸 70%까지 올리면 완료율이 ${timeLever.offRate}%대에서 ${timeLever.onRate}%대로 간다. ("오전10시 지유병원"처럼 적으면 자동 인식)`);
+      }
+      if (prioLever && rx.length < 3) {
+        const cur = lev.withPrio ? Math.round(lev.withPrio.t / (lev.withPrio.t + lev.noPrio.t) * 100) : 0;
+        rx.push(`하루 <b>A급은 최대 2개</b>만 지정하고 그건 무조건 끝낸다. 등급 지정 항목은 ${prioLever.onRate}%, 미지정은 ${prioLever.offRate}% — 현재 지정 비율 ${cur}%.`);
+      }
+
+      // 2) 밀린 약속 청산
+      if (stalled.length > 0) {
+        const names = stalled.slice(0, 2).map(z => `'${escapeHtml(z.name)}'(${z.ageDays}일째)`).join(', ');
+        rx.push(`<b>밀린 약속부터 청산</b>: ${names}. 아래 [오늘로] 버튼으로 오늘 목록에 A급으로 올리고, 시간까지 못 박아라. 못 할 일이면 목록에서 지워라 — 끌고 다니는 게 가장 비싸다.`);
+      }
+
+      // 3) 약한 요일 방어
+      const dowLever = lev.levers.find(l => l.worstDow);
+      if (dowLever && rx.length < 3) {
+        rx.push(`<b>${dowLever.worstDow}요일 규칙</b>: 항목 3개 이하, 전부 시간 지정. 완료율 ${dowLever.worstRate}%인 날에 평소처럼 계획하는 건 실패를 예약하는 것이다.`);
+      }
+
+      // 4) 기록 스트릭
+      const past = s.daily.filter(x => !x.isFuture).length;
+      const missing = past - s.activeDays;
+      if (rx.length < 3 && missing > 0) {
+        rx.push(`<b>기록 공백 0일</b> 만들기. 바쁜 날은 3줄이라도 적는다. 현재 최장 연속 ${streak.best}일 — 이 기록을 깨는 게 이번 목표다.`);
+      }
+
+      // 5) 계획 분량 — 적게 적은 날이 무너지는 패턴이면 경고
+      const sizeLever = lev.levers.find(l => l.name === '하루 계획 분량');
+      if (rx.length < 3 && sizeLever) {
+        rx.push(`<b>바쁘다고 계획을 줄이지 마라</b>. ${sizeLever.offLbl}만 적은 날 완료율은 ${sizeLever.offRate}%, ${sizeLever.onLbl} 적은 날은 ${sizeLever.onRate}%다. 적게 적은 날은 이미 마음이 놓인 날이다.`);
+      }
+
+      if (rx.length < 3) {
+        rx.push(`가장 자주 놓친 항목에 <b>마감시간과 A급</b>을 붙여 다시 올려라. 같은 방식으로 다시 적으면 결과도 같다.`);
+      }
+
+      return rx.slice(0, 3);
+    }
+
+    // 복기 텍스트(복사/공유용) 생성
+    function buildReviewText(label, diagnosis, prescriptions, quote) {
+      const strip = (h) => String(h).replace(/<[^>]+>/g, '').replace(/&#\d+;/g, '').replace(/&nbsp;/g, ' ')
+                                    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').trim();
+      const lines = [];
+      lines.push(`[새록 복기] ${label} (${statsMode === 'week' ? '주간' : '월간'})`);
+      lines.push('');
+      lines.push('# 진단');
+      diagnosis.forEach(([, msg]) => lines.push('- ' + strip(msg)));
+      lines.push('');
+      lines.push('# 처방');
+      prescriptions.forEach((p, i) => lines.push(`${i + 1}. ` + strip(p)));
+      lines.push('');
+      lines.push(strip(quote));
+      return lines.join('\n');
+    }
+
+    function copyReview() {
+      const text = reviewTextCache;
+      if (!text) return;
+      const done = () => showToast('복기 내용이 복사됐어요');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+      } else {
+        fallbackCopy(text, done);
+      }
+    }
+
+    function fallbackCopy(text, done) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { showToast('복사 실패'); }
+      document.body.removeChild(ta);
+    }
+
+    // 히트맵/밀린약속에서 해당 날짜 체크리스트로 이동
+    function openDate(dateStr) {
+      currentDate = new Date(dateStr + 'T00:00:00');
+      updateDateDisplay();
+      loadChecklist();
+      switchTab('checklist', document.querySelectorAll('.tab-btn')[0]);
+    }
+
+    // 밀린 약속을 오늘 목록으로 (A급으로 올림 — 등급 지정이 완료율을 올리므로)
+    async function pullToToday(idx) {
+      const z = stalledCache[idx];
+      if (!z) return;
+
+      currentDate = new Date();
+      updateDateDisplay();
+      await loadChecklist();
+
+      if (checklistItems.some(i => String(i.name).trim() === z.name)) {
+        showToast('이미 오늘 목록에 있어요');
+      } else {
+        const maxOrder = checklistItems.reduce((max, i) => Math.max(max, i.order || 0), 0);
+        checklistItems.push({
+          name: z.name, done: false, type: '추가', order: maxOrder + 1,
+          id: 'a' + Date.now(), deadline: null, priority: 'A'
+        });
+        renderChecklist();
+        await saveChecklist();
+        statsLong = null;   // 데이터 바뀌었으니 캐시 무효화
+        showToast(`'${z.name}' 오늘 목록에 A급으로 추가됨`);
+      }
+      switchTab('checklist', document.querySelectorAll('.tab-btn')[0]);
+    }
+
+    // 새록 복기 섹션 렌더링 (진단 + 처방 + 한 문장 + 복사)
+    function renderReviewSection(s, lev, stalled, streak, prevRate) {
+      const diagnosis = buildDiagnosis(s, lev, stalled, streak, prevRate);
+      const rx = buildPrescriptions(s, lev, stalled, streak);
+      const quote = pickQuote(s.total > 0 ? s.rate : 0);
+      const label = document.getElementById('statsPeriodLabel').textContent;
+      reviewTextCache = buildReviewText(label, diagnosis, rx, quote);
+
+      return `
+        <div class="stats-section review-section">
+          <h3>&#128172; 새록 복기 <span class="sub-note">${statsMode === 'week' ? '주간' : '월간'} 진단 &amp; 처방</span></h3>
+          ${diagnosis.map(([ico, msg]) => `
+            <div class="review-line"><span class="ico">${ico}</span><span>${msg}</span></div>`).join('')}
+
+          <div class="review-sub">이번 ${statsMode === 'week' ? '주' : '달'} 처방</div>
+          ${rx.map((t, i) => `
+            <div class="rx-item"><span class="rx-no">${i + 1}</span><span>${t}</span></div>`).join('')}
+
+          <div class="review-quote">${quote}</div>
+          <button class="copy-review-btn" onclick="copyReview()">&#128203; 복기 내용 복사 (노트봇/메모에 붙여넣기)</button>
+        </div>`;
+    }
+
+    function renderStats(dates, days, days90) {
       const s = analyzeStats(dates, days);
       const body = document.getElementById('statsBody');
 
-      if (s.total === 0) {
-        body.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">&#128202;</div>
-            <p>이 기간에 기록된 항목이 없어요</p>
-            <p style="margin-top:4px;font-size:12px;">체크리스트를 작성하면 통계가 쌓입니다</p>
-          </div>`;
-        return;
-      }
+      const lev = analyzeLevers(days90 || {});
+      const stalled = findStalled(days90 || {});
+      const streak = computeStreak(days90 || {});
+      const prevRate = prevPeriodRate(dates, days90 || {});
+      stalledCache = stalled;
 
-      // 1) 요약 카드
+      // 1) 요약 카드 (달성률 + 직전 기간 대비)
       const rateClass = s.rate >= 70 ? 'good' : s.rate < 40 ? 'bad' : '';
+      let deltaHtml = '<div class="delta flat">비교 없음</div>';
+      if (prevRate !== null) {
+        const d = s.rate - prevRate;
+        deltaHtml = `<div class="delta ${d > 0 ? 'up' : d < 0 ? 'down' : 'flat'}">${d > 0 ? '&#9650;' : d < 0 ? '&#9660;' : ''} ${Math.abs(d)}%p</div>`;
+      }
+      const pastDays = s.daily.filter(x => !x.isFuture).length;
+
       let html = `
-        <div class="stat-cards">
-          <div class="stat-card"><div class="num ${rateClass}">${s.rate}%</div><div class="lbl">달성률</div></div>
-          <div class="stat-card"><div class="num good">${s.done}</div><div class="lbl">완료</div></div>
-          <div class="stat-card"><div class="num bad">${s.total - s.done}</div><div class="lbl">미완료</div></div>
+        <div class="stat-cards" style="grid-template-columns:repeat(4,1fr);">
+          <div class="stat-card"><div class="num ${rateClass}" style="font-size:19px;">${s.rate}%</div><div class="lbl">달성률</div>${deltaHtml}</div>
+          <div class="stat-card"><div class="num good" style="font-size:19px;">${s.done}</div><div class="lbl">완료</div><div class="delta flat">${s.total}개 중</div></div>
+          <div class="stat-card"><div class="num bad" style="font-size:19px;">${s.total - s.done}</div><div class="lbl">미완료</div><div class="delta flat">완주 ${s.perfectDays}일</div></div>
+          <div class="stat-card"><div class="num" style="font-size:19px;">${s.activeDays}<span style="font-size:12px;color:var(--text-light);">/${pastDays}</span></div><div class="lbl">기록일</div><div class="delta ${s.activeDays === pastDays && pastDays > 0 ? 'up' : 'down'}">공백 ${Math.max(pastDays - s.activeDays, 0)}일</div></div>
         </div>`;
 
-      // 2) 일별 추이
-      const isWeek = statsMode === 'week';
+      // 2) 기록 히트맵 (클릭 시 해당 날짜로 이동) + 스트릭
+      const todayStr = formatDate(new Date());
+      const dowHead = ['일', '월', '화', '수', '목', '금', '토'];
+      const firstDow = new Date(dates[0] + 'T00:00:00').getDay();
+      const leading = statsMode === 'month' ? firstDow : 0;
+
+      const cells = [];
+      for (let i = 0; i < leading; i++) cells.push('<div class="heat-cell empty-day"></div>');
+      s.daily.forEach(x => {
+        const d = new Date(x.date + 'T00:00:00');
+        let cls = 'no-record';
+        if (x.t > 0) {
+          const r = x.d / x.t;
+          cls = r >= 1 ? 'lv4' : r >= 0.7 ? 'lv3' : r >= 0.4 ? 'lv2' : 'lv1';
+        }
+        if (x.isFuture) cls += ' future';
+        if (x.date === todayStr) cls += ' today-cell';
+        const sub = x.t > 0 ? `${x.d}/${x.t}` : '&#183;';
+        cells.push(`<div class="heat-cell ${cls}" onclick="openDate('${x.date}')" title="${x.date}">
+                      <div class="hc-day">${d.getDate()}</div><div class="hc-sub">${sub}</div>
+                    </div>`);
+      });
+
       html += `
         <div class="stats-section">
-          <h3>&#128200; 일별 달성 추이 <span class="sub-note">기록 ${s.activeDays}일 / 100%달성 ${s.perfectDays}일</span></h3>
-          <div class="day-chart">
-            ${s.daily.map(x => {
-              const pct = x.rate === null ? 0 : Math.max(x.rate * 100, 4);
-              const cls = x.t === 0 ? 'zero' : (x.d === x.t ? 'full' : '');
-              const d = new Date(x.date + 'T00:00:00');
-              const lbl = isWeek ? s.dowNames[d.getDay()] : (d.getDate() % 5 === 0 || d.getDate() === 1 ? d.getDate() : '');
-              return `<div class="day-col ${x.isToday ? 'today-col' : ''}">
-                        <div class="day-bar ${cls}" style="height:${x.t === 0 ? 2 : pct}%" title="${x.date}: ${x.d}/${x.t}"></div>
-                        <div class="day-lbl">${lbl}</div>
-                      </div>`;
-            }).join('')}
+          <h3>&#128197; 기록 히트맵 <span class="sub-note">칸을 누르면 그날 체크리스트로</span></h3>
+          <div class="heatmap">
+            ${dowHead.map(h => `<div class="heat-head">${h}</div>`).join('')}
+            ${cells.join('')}
+          </div>
+          <div class="heat-legend">
+            <span>기록없음</span><span class="box" style="background:var(--bg);border:1px dashed var(--border);"></span>
+            <span class="box lv1" style="background:#D5F0E3;"></span>
+            <span class="box lv2" style="background:#9FE0BE;"></span>
+            <span class="box lv3" style="background:#58C98F;"></span>
+            <span class="box lv4" style="background:var(--success);"></span><span>완주</span>
+          </div>
+          <div class="streak-row">
+            <div class="streak-box"><div class="sv">${streak.current}일</div><div class="sl">현재 연속 기록</div></div>
+            <div class="streak-box"><div class="sv">${streak.best}일</div><div class="sl">최장 기록</div></div>
+            <div class="streak-box"><div class="sv">${streak.rate}%</div><div class="sl">90일 기록률</div></div>
           </div>
         </div>`;
 
-      // 3) 우선순위별
+      // 3) 실행 레버 — 무엇이 내 완료율을 바꾸는가 (최근 90일)
+      if (lev.levers.length > 0) {
+        html += `
+          <div class="stats-section">
+            <h3>&#128295; 실행 레버 <span class="sub-note">최근 90일 ${lev.n}개 항목 기준</span></h3>
+            <div style="font-size:12px;color:var(--text-light);margin-bottom:6px;">같은 나인데 조건에 따라 완료율이 이만큼 달라집니다.</div>
+            ${lev.levers.map(l => `
+              <div class="lever">
+                <div class="lever-head">
+                  <span class="lever-name">${l.name}</span>
+                  <span class="lever-delta ${l.delta >= 0 ? 'up' : 'down'}">+${l.delta}%p</span>
+                </div>
+                <div class="lever-bar">
+                  <span class="lb-lbl">${l.onLbl}</span>
+                  <div class="lb-track"><div class="lb-fill on" style="width:${l.onRate}%"></div></div>
+                  <span class="lb-val">${l.onRate}%</span>
+                </div>
+                <div class="lever-bar">
+                  <span class="lb-lbl">${l.offLbl}</span>
+                  <div class="lb-track"><div class="lb-fill" style="width:${l.offRate}%"></div></div>
+                  <span class="lb-val">${l.offRate}%</span>
+                </div>
+                <div class="lever-note">${l.note} &middot; 표본 ${l.on.t + l.off.t}개</div>
+              </div>`).join('')}
+          </div>`;
+      }
+
+      // 4) 밀린 약속 (여러 번 적고 못 끝낸 항목)
+      if (stalled.length > 0) {
+        html += `
+          <div class="stats-section">
+            <h3>&#9203; 밀린 약속 <span class="sub-note">최근 90일 · 끌고 다니는 항목</span></h3>
+            ${stalled.map((z, i) => `
+              <div class="stalled-item">
+                <div class="st-body">
+                  <div class="st-name">${escapeHtml(z.name)}</div>
+                  <div class="st-meta"><span class="st-days">${z.ageDays}일째</span> &middot; ${z.misses}번 적고 못 끝냄 &middot; 마지막 시도 ${z.last}</div>
+                </div>
+                <button class="pull-btn" onclick="pullToToday(${i})">오늘로</button>
+              </div>`).join('')}
+            <div class="lever-note" style="margin-top:8px;">오늘로 가져오면 A급으로 올라갑니다. 할 생각이 없는 항목은 지우는 게 낫습니다.</div>
+          </div>`;
+      }
+
+      if (s.total === 0) {
+        html += `
+          <div class="stats-section">
+            <div class="empty-state" style="padding:24px 12px;">
+              <div class="empty-icon">&#128202;</div>
+              <p>이 기간엔 기록된 항목이 없어요</p>
+              <p style="margin-top:4px;font-size:12px;">위 히트맵에서 다른 기간을 눌러보거나 체크리스트를 작성해보세요</p>
+            </div>
+          </div>`;
+        html += renderReviewSection(s, lev, stalled, streak, prevRate);
+        body.innerHTML = html;
+        return;
+      }
+
+      // 5) 우선순위별
       const prioRows = [['A', 'A급 (중요)'], ['B', 'B급'], ['C', 'C급'], ['N', '미지정']]
         .filter(([k]) => s.byPrio[k].t > 0)
         .map(([k, name]) => {
@@ -2216,7 +2907,7 @@
           ${prioRows}
         </div>`;
 
-      // 4) 업무 거래처 (병원/약국)
+      // 6) 업무 거래처 (병원/약국)
       if (s.workItems.length > 0) {
         const wRate = Math.round(s.workDone / s.workItems.length * 100);
         html += `
@@ -2231,7 +2922,7 @@
           </div>`;
       }
 
-      // 5) 자주 놓친 항목
+      // 7) 자주 놓친 항목
       if (s.topMissed.length > 0) {
         html += `
           <div class="stats-section">
@@ -2245,7 +2936,7 @@
           </div>`;
       }
 
-      // 6) 많이 완료한 항목
+      // 8) 많이 완료한 항목
       if (s.topDone.length > 0) {
         html += `
           <div class="stats-section">
@@ -2259,7 +2950,7 @@
           </div>`;
       }
 
-      // 7) 생활 영역 분석
+      // 9) 생활 영역 분석
       if (s.catList.length > 0) {
         html += `
           <div class="stats-section">
@@ -2275,16 +2966,8 @@
           </div>`;
       }
 
-      // 8) 인사이트
-      const insights = buildInsights(s);
-      if (insights.length > 0) {
-        html += `
-          <div class="stats-section">
-            <h3>&#128172; 새록 인사이트</h3>
-            ${insights.map(([ico, msg]) => `
-              <div class="insight-item"><span class="ico">${ico}</span><span>${msg}</span></div>`).join('')}
-          </div>`;
-      }
+      // 10) 새록 복기 (진단 + 처방)
+      html += renderReviewSection(s, lev, stalled, streak, prevRate);
 
       body.innerHTML = html;
     }
