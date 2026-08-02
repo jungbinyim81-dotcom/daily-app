@@ -502,6 +502,93 @@
       color: var(--danger);
     }
 
+    .checklist-item .edit-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 15px;
+      cursor: pointer;
+      padding: 4px;
+      opacity: 0.5;
+    }
+
+    .checklist-item .edit-btn:active {
+      opacity: 1;
+      color: var(--primary);
+    }
+
+    /* 항목 수정 모드 (인라인 편집 폼) */
+    .checklist-item.editing {
+      display: block;
+      border: 2px solid var(--primary);
+      padding: 12px;
+    }
+
+    .edit-form .edit-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .edit-form .edit-row + .edit-row {
+      margin-top: 8px;
+    }
+
+    .edit-form .edit-name {
+      flex: 1;
+      padding: 10px 12px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      background: var(--bg);
+      min-width: 0;
+    }
+
+    .edit-form .edit-name:focus {
+      border-color: var(--primary);
+      background: var(--card);
+    }
+
+    .edit-form input[type="time"] {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 10px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      background: var(--bg);
+    }
+
+    .edit-form .edit-actions {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .edit-form .save-btn,
+    .edit-form .cancel-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      border: none;
+    }
+
+    .edit-form .save-btn {
+      background: var(--primary);
+      color: white;
+    }
+
+    .edit-form .cancel-btn {
+      background: none;
+      border: 2px solid var(--border);
+      color: var(--text-light);
+    }
+
     /* Add Item (new multi-row UI) */
     .add-item-wrapper {
       margin-top: 16px;
@@ -1048,7 +1135,7 @@
     <!-- Add new (multi-row UI) -->
     <div class="add-item-wrapper">
       <div class="add-item-row">
-        <input type="text" class="text-input" id="newItemInput" placeholder="새 항목 추가..."
+        <input type="text" class="text-input" id="newItemInput" placeholder="새 항목 추가 (예: 오전10시 지유병원)"
                onkeydown="if(event.key==='Enter')addItem()">
       </div>
       <div class="add-item-row">
@@ -1103,7 +1190,7 @@
 
     <!-- App Info -->
     <div class="settings-section" style="text-align:center;">
-      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v3.1 (통계 분석 + 중복 방지)</p>
+      <p style="font-size:13px;color:var(--text-light);">일일 체크리스트 v3.3 (시간 자동인식 + 항목 수정)</p>
       <p style="font-size:12px;color:var(--text-light);margin-top:4px;">PWA - 오프라인 지원</p>
     </div>
   </div>
@@ -1135,6 +1222,8 @@
     let checklistItems = [];
     let monthlyPlanItems = [];
     let selectedPriority = null;
+    let editingId = null;            // 수정 중인 항목 ID (null이면 수정 모드 아님)
+    let editPriority = null;         // 수정 모드에서 선택된 우선순위
     let statsMode = 'week';          // 'week' | 'month'
     let statsAnchor = new Date();    // 통계 기간 기준일
 
@@ -1397,9 +1486,114 @@
     // ==========================================
     function togglePriority(p) {
       selectedPriority = selectedPriority === p ? null : p;
-      document.querySelectorAll('.priority-btn').forEach(btn => {
+      document.querySelectorAll('.add-item-wrapper .priority-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.priority === selectedPriority);
       });
+    }
+
+    // ==========================================
+    // 시간 파싱 유틸 (글자로 쓴 시간 인식 + 저장값 정규화)
+    // ==========================================
+    const pad2 = (n) => String(n).padStart(2, '0');
+
+    // "오전10시 지유병원", "지유병원 오후 3시30분", "14시 회의", "10:30 콜", "1시반 미팅" 등에서 시간 추출
+    // 반환: { time: 'HH:MM', rest: '시간표현을 제거한 나머지 텍스트' } / 못 찾으면 null
+    function parseTimeFromText(text) {
+      if (!text) return null;
+      const src = String(text);
+
+      const MERI = '오전|오후|아침|점심|저녁|밤|새벽|낮';
+      const patterns = [
+        // 10:30 / 오후 3:30
+        new RegExp('(^|[^0-9])(' + MERI + ')?\\s*([0-9]{1,2})\\s*:\\s*([0-9]{2})'),
+        // 10시 / 오전10시 / 3시30분 / 1시반  ("3시간"은 제외)
+        new RegExp('(^|[^0-9])(' + MERI + ')?\\s*([0-9]{1,2})\\s*시(?!간)\\s*(?:(반)|([0-9]{1,2})\\s*분?)?'),
+        // 정오 / 자정
+        /(^|[^0-9])(정오|자정)/
+      ];
+
+      for (let p = 0; p < patterns.length; p++) {
+        const m = src.match(patterns[p]);
+        if (!m) continue;
+
+        let h, min;
+        if (p === 2) {
+          h = m[2] === '정오' ? 12 : 0;
+          min = 0;
+        } else {
+          const meri = m[2] || '';
+          h = parseInt(m[3], 10);
+          if (p === 0) {
+            min = parseInt(m[4], 10);
+          } else {
+            min = m[4] === '반' ? 30 : (m[5] !== undefined ? parseInt(m[5], 10) : 0);
+          }
+          if (isNaN(h) || isNaN(min) || h > 23 || min > 59) continue;
+
+          if (meri === '오전' || meri === '아침' || meri === '새벽') {
+            if (h === 12) h = 0;                       // 오전 12시 = 0시
+          } else if (meri === '밤') {
+            h = h === 12 ? 0 : (h < 12 ? h + 12 : h);  // 밤 12시 = 0시
+          } else if (meri) {
+            if (h < 12) h += 12;                       // 오후/저녁/점심/낮
+          } else if (p === 1) {
+            // "3시" 처럼 오전·오후 없이 '시'로 쓴 경우만 1~5시를 오후로 해석
+            // (10:30 같은 시:분 표기는 적힌 그대로)
+            if (h >= 1 && h <= 5) h += 12;
+          }
+          if (h > 23) continue;
+        }
+
+        // 매칭된 시간 표현만 제거하고 앞 문자(m[1])는 살림
+        const rest = (src.slice(0, m.index) + m[1] + src.slice(m.index + m[0].length))
+          .replace(/\s+/g, ' ')
+          .replace(/^[\s,\-~:]+|[\s,\-~:]+$/g, '')
+          .trim();
+
+        return { time: pad2(h) + ':' + pad2(min), rest: rest };
+      }
+      return null;
+    }
+
+    // 저장/시트에서 온 마감시간 값을 'HH:MM' 문자열로 정규화 (없으면 null)
+    function normalizeTime(value) {
+      if (value === null || value === undefined || value === '') return null;
+      if (value instanceof Date) {
+        return isNaN(value.getTime()) ? null : pad2(value.getHours()) + ':' + pad2(value.getMinutes());
+      }
+      const s = String(value).trim();
+      if (!s) return null;
+
+      // 1) 정상 저장값: 'HH:MM' (초가 붙어와도 허용)
+      const m = s.match(/^([0-9]{1,2}):([0-9]{2})(?::[0-9]{2})?$/);
+      if (m) {
+        const h = parseInt(m[1], 10), mi = parseInt(m[2], 10);
+        if (h <= 23 && mi <= 59) return pad2(h) + ':' + pad2(mi);
+      }
+
+      // 2) 구글 시트가 시간을 날짜값으로 저장한 경우
+      //    ISO("1899-12-30T...") 또는 "Sat Dec 30 1899 06:00:00 GMT+0827 (한국 표준시)"
+      if (s.includes('T') || /[0-9]{4}/.test(s)) {
+        const d = new Date(s);
+        if (!isNaN(d.getTime())) return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+      }
+
+      // 3) 한글 시간 표현
+      const parsed = parseTimeFromText(s);
+      return parsed ? parsed.time : null;
+    }
+
+    // 마감시간 → 분 단위 (없으면 Infinity: 시간 없는 항목은 맨 아래)
+    function deadlineMinutes(item) {
+      const t = normalizeTime(item.deadline);
+      if (!t) return Infinity;
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    // 항목 리스트의 마감시간을 일괄 정규화
+    function normalizeItems(items) {
+      return (items || []).map(it => Object.assign({}, it, { deadline: normalizeTime(it.deadline) }));
     }
 
     // ==========================================
@@ -1407,6 +1601,7 @@
     // ==========================================
     async function loadChecklist() {
       const dateStr = formatDate(currentDate);
+      editingId = null;   // 날짜 이동/재로드 시 수정 모드 해제
 
       if (getApiUrl()) {
         showLoading(true);
@@ -1414,7 +1609,7 @@
         showLoading(false);
 
         if (data && !data.error) {
-          const remoteItems = dedupeById(data.items || []);
+          const remoteItems = normalizeItems(dedupeById(data.items || []));
           const localItems = loadLocalChecklist(dateStr) || [];
           // 원격 데이터가 있으면 사용, 없으면 로컬 유지
           if (remoteItems.length > 0 || localItems.length === 0) {
@@ -1429,38 +1624,40 @@
       }
 
       const local = loadLocalChecklist(dateStr);
-      checklistItems = local || [];
+      checklistItems = normalizeItems(local || []);
       renderChecklist();
     }
 
-    function renderChecklist() {
+    // 정렬: 1) 마감시간 이른 순(시간 없는 항목은 아래) 2) 등급 A>B>C 3) 입력순
+    function sortChecklistItems() {
       const priorityOrder = { A: 1, B: 2, C: 3 };
-      // 마감시간을 분 단위 숫자로 변환 (없으면 맨 뒤로)
-      const deadlineMinutes = (item) => {
-        if (!item.deadline) return Infinity;
-        const [h, m] = String(item.deadline).split(':').map(Number);
-        if (isNaN(h)) return Infinity;
-        return h * 60 + (m || 0);
-      };
-      const sorted = [...checklistItems].sort((a, b) => {
-        // 1순위: 마감시간 오름차순 (시간 있는 항목이 위, 시간순 정렬)
+      checklistItems.sort((a, b) => {
         const da = deadlineMinutes(a);
         const db = deadlineMinutes(b);
         if (da !== db) return da - db;
-        // 2순위: 우선순위 A > B > C
         const pa = priorityOrder[a.priority] || 4;
         const pb = priorityOrder[b.priority] || 4;
         if (pa !== pb) return pa - pb;
-        // 3순위: 입력 순서
         return (a.order || 0) - (b.order || 0);
       });
+      // 화면 순서 = 저장 순서가 되도록 순번 재부여
+      checklistItems.forEach((it, idx) => { it.order = idx + 1; });
+    }
+
+    function renderChecklist() {
+      sortChecklistItems();
 
       const container = document.getElementById('additionalItems');
-      container.innerHTML = sorted.length > 0
-        ? sorted.map(item => renderItem(item)).join('')
+      container.innerHTML = checklistItems.length > 0
+        ? checklistItems.map(item => item.id === editingId ? renderEditForm(item) : renderItem(item)).join('')
         : '<div style="padding:8px;color:var(--text-light);font-size:13px;">항목 없음 - 아래에서 추가하세요</div>';
 
       updateProgress();
+
+      if (editingId) {
+        const input = document.getElementById('editName');
+        if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+      }
     }
 
     function renderItem(item) {
@@ -1469,58 +1666,137 @@
         : '';
 
       let deadlineHtml = '';
-      if (item.deadline) {
+      const time = normalizeTime(item.deadline);
+      if (time) {
         const isOverdue = isDeadlineOverdue(item);
-        const displayTime = formatDeadlineDisplay(item.deadline);
-        deadlineHtml = `<div class="deadline-text ${isOverdue ? 'overdue' : ''}">${displayTime}까지</div>`;
+        deadlineHtml = `<div class="deadline-text ${isOverdue ? 'overdue' : ''}">${formatDeadlineDisplay(time)}까지</div>`;
       }
 
       return `
         <div class="checklist-item ${item.done ? 'done' : ''}" data-id="${item.id}">
           <div class="checkbox" onclick="toggleItem('${item.id}')"></div>
           ${priorityBadge}
-          <div class="item-content">
+          <div class="item-content" onclick="startEdit('${item.id}')">
             <span class="item-name">${escapeHtml(item.name)}</span>
             ${deadlineHtml}
           </div>
+          <button class="edit-btn" onclick="startEdit('${item.id}')">&#9998;</button>
           <button class="delete-btn" onclick="deleteItem('${item.id}')">&times;</button>
         </div>
       `;
     }
 
+    // 인라인 수정 폼 (내용/시간/등급 모두 수정)
+    function renderEditForm(item) {
+      const time = normalizeTime(item.deadline) || '';
+      const prioBtn = (p) => `<button class="priority-btn${editPriority === p ? ' active' : ''}" data-priority="${p}" onclick="toggleEditPriority('${p}')">${p}</button>`;
+
+      return `
+        <div class="checklist-item editing" data-id="${item.id}">
+          <div class="edit-form">
+            <div class="edit-row">
+              <input type="text" class="edit-name" id="editName" value="${escapeAttr(item.name)}"
+                     placeholder="내용 (예: 오전10시 지유병원)"
+                     onkeydown="if(event.key==='Enter')saveEdit();if(event.key==='Escape')cancelEdit()">
+            </div>
+            <div class="edit-row">
+              <div class="time-group">
+                <input type="time" id="editDeadline" value="${time}">
+                <span class="until-label">까지</span>
+              </div>
+              <div class="priority-group">
+                ${prioBtn('A')}${prioBtn('B')}${prioBtn('C')}
+              </div>
+            </div>
+            <div class="edit-row">
+              <div class="edit-actions">
+                <button class="cancel-btn" onclick="cancelEdit()">취소</button>
+                <button class="save-btn" onclick="saveEdit()">저장</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function startEdit(id) {
+      const item = checklistItems.find(i => i.id === id);
+      if (!item) return;
+      editingId = id;
+      editPriority = item.priority || null;
+      renderChecklist();
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      editPriority = null;
+      renderChecklist();
+    }
+
+    function toggleEditPriority(p) {
+      editPriority = editPriority === p ? null : p;
+      document.querySelectorAll('.checklist-item.editing .priority-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.priority === editPriority);
+      });
+    }
+
+    async function saveEdit() {
+      const item = checklistItems.find(i => i.id === editingId);
+      if (!item) { cancelEdit(); return; }
+
+      const nameInput = document.getElementById('editName');
+      const timeInput = document.getElementById('editDeadline');
+      let name = (nameInput.value || '').trim();
+      if (!name) { showToast('내용을 입력하세요'); return; }
+
+      // 내용에 시간을 글자로 적었으면 그걸 마감시간으로 (예: "오후3시 미팅")
+      let deadline = timeInput.value || null;
+      const parsed = parseTimeFromText(name);
+      if (parsed && parsed.rest) {
+        name = parsed.rest;
+        deadline = parsed.time;
+      }
+
+      item.name = name;
+      item.deadline = normalizeTime(deadline);
+      item.priority = editPriority;
+
+      editingId = null;
+      editPriority = null;
+      renderChecklist();
+      await saveChecklist();
+      showToast('수정됨');
+    }
+
     function isDeadlineOverdue(item) {
-      if (!item.deadline) return false;
+      const time = normalizeTime(item.deadline);
+      if (!time) return false;
       const today = formatDate(new Date());
       const dateStr = formatDate(currentDate);
       if (dateStr !== today) return false;
 
       const now = new Date();
-      const [h, m] = item.deadline.split(':').map(Number);
+      const [h, m] = time.split(':').map(Number);
       return now.getHours() > h || (now.getHours() === h && now.getMinutes() > m);
     }
 
     function formatDeadlineDisplay(timeStr) {
-      if (!timeStr) return '';
-      let h, m;
-      // ISO 날짜 문자열인 경우 (구글 시트 자동 변환)
-      if (typeof timeStr === 'string' && (timeStr.includes('T') || timeStr.includes('-'))) {
-        const d = new Date(timeStr);
-        if (!isNaN(d.getTime())) { h = d.getHours(); m = d.getMinutes(); }
-      } else {
-        const parts = String(timeStr).split(':');
-        h = parseInt(parts[0], 10);
-        m = parseInt(parts[1], 10);
-      }
-      if (isNaN(h) || isNaN(m)) return String(timeStr);
+      const t = normalizeTime(timeStr);
+      if (!t) return String(timeStr || '');
+      const [h, m] = t.split(':').map(Number);
       const period = h < 12 ? '오전' : '오후';
       const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-      return `${period} ${h12}:${String(m).padStart(2, '0')}`;
+      return `${period} ${h12}:${pad2(m)}`;
     }
 
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    function escapeAttr(text) {
+      return escapeHtml(text).replace(/"/g, '&quot;');
     }
 
     function updateProgress() {
@@ -1549,11 +1825,19 @@
 
     async function addItem() {
       const input = document.getElementById('newItemInput');
-      const name = input.value.trim();
+      let name = input.value.trim();
       if (!name) return;
 
       const deadlineInput = document.getElementById('newItemDeadline');
-      const deadline = deadlineInput.value || null;
+      let deadline = deadlineInput.value || null;
+
+      // 글자로 쓴 시간 인식: "오전10시 지유병원" → 10:00 + "지유병원"
+      const parsed = parseTimeFromText(name);
+      if (parsed && parsed.rest) {
+        name = parsed.rest;
+        deadline = parsed.time;
+      }
+      deadline = normalizeTime(deadline);
 
       const maxOrder = checklistItems.reduce((max, i) => Math.max(max, i.order || 0), 0);
       checklistItems.push({
@@ -1569,11 +1853,11 @@
       input.value = '';
       deadlineInput.value = '';
       selectedPriority = null;
-      document.querySelectorAll('.priority-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.add-item-wrapper .priority-btn').forEach(btn => btn.classList.remove('active'));
 
       renderChecklist();
       await saveChecklist();
-      showToast('항목 추가됨');
+      showToast(deadline ? `${formatDeadlineDisplay(deadline)} 항목 추가됨` : '항목 추가됨');
     }
 
     async function saveChecklist() {

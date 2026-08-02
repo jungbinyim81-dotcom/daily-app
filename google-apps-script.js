@@ -194,8 +194,19 @@ function getChecklist(dateStr) {
       priority: row[7] || null
     }));
 
+  // 정렬: 1) 마감시간 이른 순(시간 없으면 아래) 2) 등급 A>B>C 3) 입력순 — 앱 화면 순서와 동일
+  const toMinutes = (t) => {
+    if (!t) return Infinity;
+    const m = String(t).match(/(\d{1,2}):(\d{2})/);
+    if (!m) return Infinity;
+    return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  };
+
   const sorted = dedupeById(items)
     .sort((a, b) => {
+      const da = toMinutes(a.deadline);
+      const db = toMinutes(b.deadline);
+      if (da !== db) return da - db;
       const pOrder = { A: 1, B: 2, C: 3 };
       const pa = pOrder[a.priority] || 4;
       const pb = pOrder[b.priority] || 4;
